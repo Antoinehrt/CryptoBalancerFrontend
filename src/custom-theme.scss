@@ -1,20 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 html {
     @include mat.theme((
         color: (
-            primary: rgb(59, 130, 246),
-            secondary: rgb(30, 64, 175),
-            tertiary: rgb(7, 7, 7),
+            primary: mat.$azure-palette,
+            tertiary: mat.$blue-palette,
         ),
-        typography: Roboto,
+        typography: (
+            brand-family: 'Roboto',
+            plain-family: 'Roboto',
+        ),
         density: 0,
     ));
 }
