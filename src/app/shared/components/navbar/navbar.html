@@ -1,1 +1,25 @@
-<p>navbar works!</p>
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="side" opened disableClose class="sidenav permanent-sidenav">
+        <nav class="mat-nav-list">
+            <div class="top-links">
+                <a mat-list-item routerLink="/Dashboard" (click)="closeIfHandset()">Dashboard</a>
+                <a mat-list-item routerLink="/Account" (click)="closeIfHandset()">Account</a>
+                <a mat-list-item routerLink="/Strategies" (click)="closeIfHandset()">Strategies</a>
+                <a mat-list-item routerLink="/MyWallet" (click)="closeIfHandset()">My Wallet</a>
+                <a mat-list-item routerLink="/Glossary" (click)="closeIfHandset()">Glossary</a>
+                <a mat-list-item routerLink="/Settings" (click)="closeIfHandset()">Settings</a>
+            </div>
+
+            <div class="bottom-link">
+                <a mat-list-item routerLink="/Logout" (click)="closeIfHandset()">Logout</a>
+            </div>
+        </nav>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+
+        <div class="content">
+            <ng-content></ng-content>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>
