@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+    @include mat.theme((
+        color: (
+            primary: rgb(59, 130, 246),
+            secondary: rgb(30, 64, 175),
+            tertiary: rgb(7, 7, 7),
+        ),
+        typography: Roboto,
+        density: 0,
+    ));
+}
+
+body {
+    // Default the application to a light color theme. This can be changed to
+    // `dark` to enable the dark color theme, or to `light dark` to defer to the
+    // user's system settings.
+    color-scheme: light;
+
+    // Set a default background, font and text colors for the application using
+    // Angular Material's system-level CSS variables. Learn more about these
+    // variables at https://material.angular.dev/guide/system-variables
+    background-color: rgb(248, 250, 252);
+    color: rgba(31, 41, 55, 1);
+    font: 400 1rem/1.5 "Roboto", "Nunito Sans", "Montserrat", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+
+    // Reset the user agent margin.
+    margin: 0;
+}
