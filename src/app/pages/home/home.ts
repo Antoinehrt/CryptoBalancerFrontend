@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { PageTitleService } from '../../core/services/page-title.service';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [MatButtonModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
