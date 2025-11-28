@@ -1,0 +1,23 @@
+﻿<mat-toolbar class="header">
+    <div class="header-content">
+        <h1 class="page-title">{{ pageTitle$ | async }}</h1>
+
+        <mat-form-field class="search-field">
+            <mat-label><mat-icon>search</mat-icon> Search</mat-label>
+            <input matInput>
+        </mat-form-field>
+
+        <div class="header-actions">
+            <button
+                mat-icon-button
+                class="notification-btn"
+            >
+                <mat-icon>notifications</mat-icon>
+            </button>
+
+            <button mat-icon-button class="profile-btn">
+                <mat-icon>account_circle</mat-icon>
+            </button>
+        </div>
+    </div>
+</mat-toolbar>
