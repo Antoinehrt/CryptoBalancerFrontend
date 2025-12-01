@@ -622,3 +622,4 @@ dist
 
 
 # End of https://www.toptal.com/developers/gitignore/api/angular,webstorm,webstorm+all,webstorm+iml,jetbrains,jetbrains+all,jetbrains+iml,node
+!/.vscode/
