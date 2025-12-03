@@ -1,0 +1,14 @@
+.background{
+    background-color: rgba(31, 41, 55, 0.6);
+    border-radius: 42px;
+    color: rgb(248, 250, 252);
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 5vh - 3rem);
+    padding: 20px;
+    box-sizing: border-box;
+}
