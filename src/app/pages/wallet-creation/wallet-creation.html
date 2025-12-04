@@ -1,1 +1,76 @@
-<p>wallet-creation works!</p>
+<div class="container background">
+    <div class="elements">
+        <form [formGroup]="assetForm" (ngSubmit)="addAsset()">
+            <mat-form-field>
+                <mat-label>Crypto Asset</mat-label>
+                <mat-select formControlName="symbol" required>
+                    <mat-option *ngFor="let crypto of cryptoOptions" [value]="crypto.value">
+                        {{crypto.name}} ({{crypto.value}})
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Quantity</mat-label>
+                <input matInput type="number" formControlName="quantity" step="0.00001" placeholder="0.0001" required>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" [disabled]="assetForm.invalid">
+                Add Asset
+            </button>
+        </form>
+    </div>
+    <div class="elements">
+        <app-chart
+            [datas]="chartData"
+            [cryptoSymbol]="''">
+        </app-chart>
+    </div>
+    <div class="elements">
+        <h3>Assets</h3>
+
+        <table class="assets-table" *ngIf="assets.length > 0; else noAssets">
+            <thead>
+                <tr>
+                    <th>Asset</th>
+                    <th>Quantity</th>
+                    <th>Percentage</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let asset of assets">
+                    <td>
+                        <strong>{{asset.name}}</strong>
+                        <span class="symbol">({{asset.symbol}})</span>
+                    </td>
+                    <td>{{asset.quantity | number:'1.2-8'}}</td>
+                    <td>
+                        <span class="percentage">{{asset.percentage}}%</span>
+                    </td>
+                    <td>
+                        <button mat-icon-button color="warn" (click)="removeAsset(asset.id)" title="Remove asset">
+                            ❌
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <ng-template #noAssets>
+            <div class="no-assets">
+                <p>No assets in the wallet.</p>
+            </div>
+        </ng-template>
+    </div>
+
+    <div class="backtest-section">
+        <button
+            mat-raised-button
+            color="accent"
+            [disabled]="assets.length === 0"
+            class="backtest-button">
+            <span>🚀 Run Backtest</span>
+        </button>
+    </div>
+</div>
