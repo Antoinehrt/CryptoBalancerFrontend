@@ -1,0 +1,16 @@
+.risk-profile {
+    display: flex;
+    gap: 6px;
+}
+
+.circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid white;
+    opacity: 0.8;
+}
+
+.circle.filled {
+    background: rgb(248, 250, 252);
+}

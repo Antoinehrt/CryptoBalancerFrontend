@@ -1,0 +1,7 @@
+<div class="risk-profile">
+    <div
+        *ngFor="let c of circles"
+        class="circle"
+        [class.filled]="c <= value"
+    ></div>
+</div>
