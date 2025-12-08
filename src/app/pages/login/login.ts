@@ -18,14 +18,9 @@ export class Login {
   loginWithGoogle(): void {
     this.isLoading = true;
     this.authService.loginWithGoogle();
-    
-    // Réinitialiser le loading après 30 secondes max
+
     setTimeout(() => {
       this.isLoading = false;
     }, 30000);
-  }
-
-  logout(): void {
-    this.authService.logout();
   }
 }
