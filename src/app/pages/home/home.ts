@@ -2,11 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
 import {PageTitleService} from '../../core/services/page-title.service';
-import {StrategyCard} from '../../shared/components/strategy-card/strategy-card';
 
 @Component({
     selector: 'app-home',
-    imports: [MatButtonModule, StrategyCard],
+    imports: [MatButtonModule],
     templateUrl: './home.html',
     styleUrl: './home.css',
 })
