@@ -1,0 +1,142 @@
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.login-content {
+  text-align: center;
+}
+
+.login-content h1 {
+  color: #1a1a1a;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+.google-login-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 24px;
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  background: white;
+  color: #3c4043;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.google-login-btn:hover:not(:disabled) {
+  background: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.google-login-btn:active:not(:disabled) {
+  background: #e8eaed;
+}
+
+.google-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4285F4;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.info-text {
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.user-info {
+  text-align: center;
+}
+
+.user-info h1 {
+  color: #1a1a1a;
+  font-size: 28px;
+  margin-bottom: 30px;
+}
+
+.user-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.user-details p {
+  margin: 12px 0;
+  color: #3c4043;
+  font-size: 15px;
+}
+
+.user-details strong {
+  color: #1a1a1a;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 100px;
+}
+
+.logout-btn {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  background: #dc3545;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #c82333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logout-btn:active {
+  background: #bd2130;
+}
+
