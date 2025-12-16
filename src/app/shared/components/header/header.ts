@@ -7,6 +7,7 @@ import {MatIconButton} from '@angular/material/button';
 import {PageTitleService} from '../../../core/services/page-title/page-title.service';
 import {AsyncPipe} from '@angular/common';
 import {Observable} from 'rxjs';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-header',
@@ -23,11 +24,19 @@ import {Observable} from 'rxjs';
     styleUrl: './header.css',
 })
 export class Header implements OnInit {
+
+    isUserConnected: boolean = false;
     pageTitle$!: Observable<string>;
-    constructor(private pageTitleService: PageTitleService) {
+
+    constructor(private _pageTitleService: PageTitleService, private router: Router) {
     }
 
     ngOnInit() {
-        this.pageTitle$ = this.pageTitleService.pageTitle$;
+        this.pageTitle$ = this._pageTitleService.pageTitle$;
+    }
+
+
+    protected navigateToProfile() {
+        this.router.navigate(['/profile']);
     }
 }
