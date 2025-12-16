@@ -1,1 +1,11 @@
-<p>profile works!</p>
+<div class="user-info">
+    <h1>Vous êtes connecté ! 🎉</h1>
+    <div class="user-card" *ngIf="currentUser$ | async as user">
+        <div class="user-details">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Username:</strong> {{ user.username }}</p>
+            <p><strong>ID:</strong> {{ user.id }}</p>
+            <p><strong>Créé le:</strong> {{ user.createdAt | date:'short' }}</p>
+        </div>
+    </div>
+</div>
