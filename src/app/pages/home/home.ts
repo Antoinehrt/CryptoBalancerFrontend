@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
-import {PageTitleService} from '../../core/services/page-title.service';
+import {PageTitleService} from '../../core/services/page-title/page-title.service';
 
 @Component({
     selector: 'app-home',

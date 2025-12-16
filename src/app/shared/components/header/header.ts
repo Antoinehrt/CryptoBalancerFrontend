@@ -4,8 +4,7 @@ import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
 import {MatIcon} from '@angular/material/icon';
 import {MatIconButton} from '@angular/material/button';
-import {MatBadge} from '@angular/material/badge';
-import {PageTitleService} from '../../../core/services/page-title.service';
+import {PageTitleService} from '../../../core/services/page-title/page-title.service';
 import {AsyncPipe} from '@angular/common';
 import {Observable} from 'rxjs';
 

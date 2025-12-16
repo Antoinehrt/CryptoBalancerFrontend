@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {PageTitleService} from '../../core/services/page-title.service';
+import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
 import {ChartDataPoint} from '../../core/models/chart-data-point';
