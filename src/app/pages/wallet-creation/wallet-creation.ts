@@ -69,83 +69,69 @@ export class WalletCreation implements OnInit {
         });
 
         this.wallet = {
-            id: this.generateNumericId(),
+            id: 0,
             userId: 0,
             crypto: []
         };
     }
 
-    ngOnInit() {
+    ngOnInit(): void {
         this._pageTitleService.setPageTitle('Wallet Creation');
-        this._cryptoService.getAllSymbols().subscribe(symbols => {
-            this.symbols = symbols
-        })
+        this._cryptoService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
-    addAsset() {
-        if (this.assetForm.valid) {
-            const formValue = this.assetForm.value;
-            const selectedSymbol = formValue.symbol;
-
-            if (selectedSymbol) {
-                const existingIndex = this.wallet.crypto.findIndex(c => c.symbol === selectedSymbol);
-
-                const qty = parseFloat(formValue.quantity);
-
-                if (existingIndex >= 0) {
-
-                    const existing = this.wallet.crypto[existingIndex];
-                    existing.quantity = (existing.quantity || 0) + qty;
-                    this.showMessage(`Quantity updated for ${selectedSymbol}`);
-                } else {
-                    this._cryptoService.getCryptoPrice(selectedSymbol).subscribe({
-                        next: (price) => {
-                            const newCrypto: CryptoDto = {
-                                id: this.generateNumericId(),
-                                symbol: selectedSymbol,
-                                price: price.price,
-                                quantity: qty
-                            };
-                            this.wallet.crypto.push(newCrypto);
-                            this.showMessage(`${selectedSymbol} added to your wallet`);
-                            this.calculatePercentages();
-                            this.assetForm.reset();
-                        },
-                        error: () => {
-                            this.showMessage(`Impossible de récupérer le prix pour ${selectedSymbol}`, true);
-                        }
-                    });
-                    return;
-                }
-
-                this.calculatePercentages();
-
-                this.assetForm.reset();
-            }
-        } else {
+    addAsset(): void {
+        if (!this.assetForm.valid) {
             this.showMessage('Please complete every field', true);
+            return;
         }
+
+        const {symbol, quantity} = this.assetForm.value;
+        if (!symbol) return;
+
+        const qty = parseFloat(quantity);
+        const existing = this.wallet.crypto.find(c => c.symbol === symbol);
+
+        if (existing) {
+            existing.quantity = (existing.quantity || 0) + qty;
+            this.showMessage(`Quantity updated for ${symbol}`);
+            this.calculatePercentages();
+            this.assetForm.reset();
+            return;
+        }
+
+        this._cryptoService.getCryptoPrice(symbol).subscribe({
+            next: (price) => {
+                const newCrypto: CryptoDto = {
+                    id: this.generateNumericId(),
+                    symbol,
+                    price: price.price,
+                    quantity: qty
+                };
+                this.wallet.crypto.push(newCrypto);
+                this.showMessage(`${symbol} added to your wallet`);
+                this.calculatePercentages();
+                this.assetForm.reset();
+            },
+            error: () => {
+                this.showMessage(`Impossible to find the price for ${symbol}`, true);
+            }
+        });
     }
 
-    removeCrypto(symbol: string) {
+    removeCrypto(symbol: string): void {
         this.wallet.crypto = this.wallet.crypto.filter(c => c.symbol !== symbol);
         delete this.percentages[symbol];
         this.calculatePercentages();
-        this.showMessage('Asset supprimé du portefeuille');
+        this.showMessage('Asset removed from the wallet');
     }
 
-    private calculatePercentages() {
-        const totalValue = this.wallet.crypto.reduce((sum, crypto) => {
-            const qty = crypto.quantity || 0;
-            const price = crypto.price ?? 0;
-            return sum + qty * price;
-        }, 0);
+    private calculatePercentages(): void {
+        const totalValue = this.wallet.crypto.reduce((sum, c) => sum + (c.quantity || 0) * (c.price ?? 0), 0);
 
-        this.wallet.crypto.forEach(crypto => {
-            const qty = crypto.quantity || 0;
-            const price = crypto.price ?? 0;
-            const value = qty * price;
-            this.percentages[crypto.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
+        this.wallet.crypto.forEach(c => {
+            const value = (c.quantity || 0) * (c.price ?? 0);
+            this.percentages[c.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
         });
     }
 
@@ -162,24 +148,44 @@ export class WalletCreation implements OnInit {
         return this.percentages[symbol] || 0;
     }
 
-    private showMessage(message: string, isError = false) {
+    private showMessage(message: string, isError = false): void {
         this._snackBar.open(message, 'Close', {
             duration: 3000,
             panelClass: isError ? 'error-snackbar' : 'success-snackbar'
         });
     }
 
-    saveWallet(){
-        this._userService.getCurrentUser().subscribe(user => {
-            if (this.wallet){
-                this.wallet.userId = user.id;
-                console.log(this.wallet)
-                try {
-                    this._walletService.createWallet(this.wallet);
-                } catch (e) {
-                    this.showMessage('Error saving wallet', true);
-                }
-            }
+    saveWallet(): void {
+        this._userService.getCurrentUser().subscribe({
+            next: (user) => {
+                this._walletService.createWallet(user.id).subscribe({
+                    next: () => {
+                        let completedCalls = 0;
+                        const totalCalls = this.wallet.crypto.length;
+
+                        if (totalCalls === 0) {
+                            this.showMessage('Wallet created successfully');
+                            return;
+                        }
+
+                        this.wallet.crypto.forEach(crypto => {
+                            this._walletService.addCryptoToWalletFromUser(user.id, crypto).subscribe({
+                                next: () => {
+                                    completedCalls++;
+                                    if (completedCalls === totalCalls) {
+                                        this.showMessage('Wallet saved successfully');
+                                    }
+                                },
+                                error: () => {
+                                    this.showMessage(`Error adding ${crypto.symbol}`, true);
+                                }
+                            });
+                        });
+                    },
+                    error: () => this.showMessage('Error creating wallet', true)
+                });
+            },
+            error: () => this.showMessage('Error fetching user', true)
         });
     }
 }
