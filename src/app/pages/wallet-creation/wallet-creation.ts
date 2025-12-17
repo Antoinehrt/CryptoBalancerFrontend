@@ -53,7 +53,7 @@ export class WalletCreation implements OnInit {
         {amount: 0, time: new Date(2024, 11, 1)}
     ];
 
-    symbols?: String[];
+    symbols?: string[];
 
     constructor(
         private _pageTitleService: PageTitleService,

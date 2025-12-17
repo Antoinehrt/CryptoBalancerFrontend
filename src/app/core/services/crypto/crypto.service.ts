@@ -13,7 +13,7 @@ export class CryptoService {
     private apiUrl = environment.apiUrl + 'crypto/';
     private http = inject(HttpClient);
 
-    getAllSymbols(): Observable<String[]>{
+    getAllSymbols(): Observable<string[]>{
         return this.http.get<any>(`${this.apiUrl}getAllSymbols`).pipe(
             map(response => {
                 return response.symbols;
@@ -21,7 +21,7 @@ export class CryptoService {
         );
     }
 
-    getCryptoPrice(symbol: String): Observable<CryptoDto>{
+    getCryptoPrice(symbol: string): Observable<CryptoDto>{
         return this.http.get<CryptoDto>(`${this.apiUrl}price/${symbol}`)
     }
 
