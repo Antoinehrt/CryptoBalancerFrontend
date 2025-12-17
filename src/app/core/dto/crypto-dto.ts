@@ -1,4 +1,4 @@
-export interface Crypto {
+export interface CryptoDto {
     id: number;
     symbol: string;
     price: number;
