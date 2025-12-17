@@ -29,27 +29,28 @@
     <div class="elements">
         <h3>Assets</h3>
 
-        <table class="assets-table" *ngIf="assets.length > 0; else noAssets">
+        <table class="assets-table" *ngIf="wallet.crypto.length > 0; else noAssets">
             <thead>
                 <tr>
                     <th>Asset</th>
                     <th>Quantity</th>
+                    <th>Price</th>
                     <th>Percentage</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let asset of assets">
+                <tr *ngFor="let crypto of wallet.crypto">
                     <td>
-                        <strong>{{asset.name}}</strong>
-                        <span class="symbol">({{asset.symbol}})</span>
+                        <strong>{{crypto.symbol}}</strong>
                     </td>
-                    <td>{{asset.quantity | number:'1.2-8'}}</td>
+                    <td>{{ getQuantity(crypto.symbol) | number:'1.2-8' }}</td>
+                    <td>{{crypto.price | currency:'USD':'symbol'}}</td>
                     <td>
-                        <span class="percentage">{{asset.percentage}}%</span>
+                        <span class="percentage">{{ getPercentage(crypto.symbol) }}%</span>
                     </td>
                     <td>
-                        <button mat-icon-button color="warn" (click)="removeAsset(asset.id)" title="Remove asset">
+                        <button mat-icon-button color="warn" (click)="removeCrypto(crypto.symbol)" title="Remove asset">
                             ❌
                         </button>
                     </td>
@@ -68,7 +69,7 @@
         <button
             mat-raised-button
             color="accent"
-            [disabled]="assets.length === 0"
+            [disabled]="wallet.crypto.length === 0"
             class="backtest-button">
             <span>🚀 Run Backtest</span>
         </button>

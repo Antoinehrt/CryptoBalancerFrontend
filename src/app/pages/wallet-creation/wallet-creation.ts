@@ -7,7 +7,8 @@ import {MatSelect, MatOption} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Asset} from '../../core/models/asset';
+import {WalletDto} from '../../core/dto/wallet-dto';
+import {CryptoDto} from '../../core/dto/crypto-dto';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {CryptoService} from '../../core/services/crypto/crypto.service';
@@ -31,7 +32,10 @@ import {CryptoService} from '../../core/services/crypto/crypto.service';
 export class WalletCreation implements OnInit {
     assetForm: FormGroup;
 
-    assets: Asset[] = [];
+    wallet!: WalletDto;
+
+    private holdings: Record<string, number> = {};
+    private percentages: Record<string, number> = {};
 
     chartData: ChartDataPoint[] = [
         {amount: 0, time: new Date(2024, 0, 1)},
@@ -53,13 +57,19 @@ export class WalletCreation implements OnInit {
     constructor(
         private _pageTitleService: PageTitleService,
         private _cryptoService: CryptoService,
-        private fb: FormBuilder,
-        private snackBar: MatSnackBar
+        private _fb: FormBuilder,
+        private _snackBar: MatSnackBar,
     ) {
-        this.assetForm = this.fb.group({
+        this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
             quantity: ['', [Validators.required, Validators.min(0.00001)]]
         });
+
+        this.wallet = {
+            id: this.generateNumericId(),
+            userId: 0,
+            crypto: []
+        };
     }
 
     ngOnInit() {
@@ -75,21 +85,33 @@ export class WalletCreation implements OnInit {
             const selectedSymbol = formValue.symbol;
 
             if (selectedSymbol) {
-                const existingAssetIndex = this.assets.findIndex(asset => asset.symbol === formValue.symbol);
+                const existingIndex = this.wallet.crypto.findIndex(c => c.symbol === selectedSymbol);
 
-                if (existingAssetIndex >= 0) {
-                    this.assets[existingAssetIndex].quantity += parseFloat(formValue.quantity);
+                const qty = parseFloat(formValue.quantity);
+
+                if (existingIndex >= 0) {
+
+                    this.holdings[selectedSymbol] = (this.holdings[selectedSymbol] || 0) + qty;
                     this.showMessage(`Quantity updated for ${selectedSymbol}`);
                 } else {
-                    const newAsset: Asset = {
-                        id: this.generateId(),
-                        symbol: formValue.symbol,
-                        name: selectedSymbol,
-                        quantity: parseFloat(formValue.quantity),
-                        percentage: 0
-                    };
-                    this.assets.push(newAsset);
-                    this.showMessage(`${selectedSymbol} added to your wallet`);
+                    this._cryptoService.getCryptoPrice(selectedSymbol).subscribe({
+                        next: (price) => {
+                            const newCrypto: CryptoDto = {
+                                id: this.generateNumericId(),
+                                symbol: selectedSymbol,
+                                price: price.price
+                            };
+                            this.wallet.crypto.push(newCrypto);
+                            this.holdings[selectedSymbol] = qty;
+                            this.showMessage(`${selectedSymbol} added to your wallet`);
+                            this.calculatePercentages();
+                            this.assetForm.reset();
+                        },
+                        error: () => {
+                            this.showMessage(`Impossible de récupérer le prix pour ${selectedSymbol}`, true);
+                        }
+                    });
+                    return;
                 }
 
                 this.calculatePercentages();
@@ -101,26 +123,43 @@ export class WalletCreation implements OnInit {
         }
     }
 
-    removeAsset(assetId: string) {
-        this.assets = this.assets.filter(asset => asset.id !== assetId);
+    removeCrypto(symbol: string) {
+        this.wallet.crypto = this.wallet.crypto.filter(c => c.symbol !== symbol);
+        delete this.holdings[symbol];
+        delete this.percentages[symbol];
         this.calculatePercentages();
         this.showMessage('Asset supprimé du portefeuille');
     }
 
     private calculatePercentages() {
-        const totalQuantity = this.assets.reduce((sum, asset) => sum + asset.quantity, 0);
+        const totalValue = this.wallet.crypto.reduce((sum, crypto) => {
+            const qty = this.holdings[crypto.symbol] || 0;
+            const price = crypto.price ?? 0;
+            return sum + qty * price;
+        }, 0);
 
-        this.assets.forEach(asset => {
-            asset.percentage = totalQuantity > 0 ? Math.round((asset.quantity / totalQuantity) * 10000) / 100 : 0;
+        this.wallet.crypto.forEach(crypto => {
+            const qty = this.holdings[crypto.symbol] || 0;
+            const price = crypto.price ?? 0;
+            const value = qty * price;
+            this.percentages[crypto.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
         });
     }
 
-    private generateId(): string {
-        return Math.random().toString(36).substr(2, 9);
+    private generateNumericId(): number {
+        return Math.floor(Math.random() * 1_000_000_000);
+    }
+
+    getQuantity(symbol: string): number {
+        return this.holdings[symbol] || 0;
+    }
+
+    getPercentage(symbol: string): number {
+        return this.percentages[symbol] || 0;
     }
 
     private showMessage(message: string, isError = false) {
-        this.snackBar.open(message, 'Close', {
+        this._snackBar.open(message, 'Close', {
             duration: 3000,
             panelClass: isError ? 'error-snackbar' : 'success-snackbar'
         });
