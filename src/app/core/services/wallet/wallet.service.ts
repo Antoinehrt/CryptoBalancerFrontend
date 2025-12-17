@@ -20,12 +20,14 @@ export class WalletService {
         return this.http.get<WalletDto>(`${this.apiUrl}getWalletByUserId/${userId}`);
     }
 
-    addCryptoToWalletFromUser(userId: number, crypto: CryptoDto): Observable<CryptoDto>{
-        return this.http.post<CryptoDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID`, crypto);
+    addCryptoToWalletFromUser(userId: number, crypto: CryptoDto): Observable<WalletDto>{
+        const symbol = crypto.symbol;
+        const amount = crypto.quantity || 0;
+        return this.http.post<WalletDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID?symbol=${symbol}&amount=${amount}`, {});
     }
 
     walletExists(userId: number): Observable<boolean>{
-        return this.http.get<boolean>(`${this.apiUrl}/exists/${userId}`);
+        return this.http.get<boolean>(`${this.apiUrl}exists/${userId}`);
     }
 
 }
