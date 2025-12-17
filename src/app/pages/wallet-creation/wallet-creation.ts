@@ -34,7 +34,6 @@ export class WalletCreation implements OnInit {
 
     wallet!: WalletDto;
 
-    private holdings: Record<string, number> = {};
     private percentages: Record<string, number> = {};
 
     chartData: ChartDataPoint[] = [
@@ -91,7 +90,8 @@ export class WalletCreation implements OnInit {
 
                 if (existingIndex >= 0) {
 
-                    this.holdings[selectedSymbol] = (this.holdings[selectedSymbol] || 0) + qty;
+                    const existing = this.wallet.crypto[existingIndex];
+                    existing.quantity = (existing.quantity || 0) + qty;
                     this.showMessage(`Quantity updated for ${selectedSymbol}`);
                 } else {
                     this._cryptoService.getCryptoPrice(selectedSymbol).subscribe({
@@ -99,10 +99,10 @@ export class WalletCreation implements OnInit {
                             const newCrypto: CryptoDto = {
                                 id: this.generateNumericId(),
                                 symbol: selectedSymbol,
-                                price: price.price
+                                price: price.price,
+                                quantity: qty
                             };
                             this.wallet.crypto.push(newCrypto);
-                            this.holdings[selectedSymbol] = qty;
                             this.showMessage(`${selectedSymbol} added to your wallet`);
                             this.calculatePercentages();
                             this.assetForm.reset();
@@ -125,7 +125,6 @@ export class WalletCreation implements OnInit {
 
     removeCrypto(symbol: string) {
         this.wallet.crypto = this.wallet.crypto.filter(c => c.symbol !== symbol);
-        delete this.holdings[symbol];
         delete this.percentages[symbol];
         this.calculatePercentages();
         this.showMessage('Asset supprimé du portefeuille');
@@ -133,13 +132,13 @@ export class WalletCreation implements OnInit {
 
     private calculatePercentages() {
         const totalValue = this.wallet.crypto.reduce((sum, crypto) => {
-            const qty = this.holdings[crypto.symbol] || 0;
+            const qty = crypto.quantity || 0;
             const price = crypto.price ?? 0;
             return sum + qty * price;
         }, 0);
 
         this.wallet.crypto.forEach(crypto => {
-            const qty = this.holdings[crypto.symbol] || 0;
+            const qty = crypto.quantity || 0;
             const price = crypto.price ?? 0;
             const value = qty * price;
             this.percentages[crypto.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
@@ -151,7 +150,8 @@ export class WalletCreation implements OnInit {
     }
 
     getQuantity(symbol: string): number {
-        return this.holdings[symbol] || 0;
+        const crypto = this.wallet.crypto.find(c => c.symbol === symbol);
+        return crypto?.quantity || 0;
     }
 
     getPercentage(symbol: string): number {
