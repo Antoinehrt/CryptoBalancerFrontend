@@ -12,6 +12,8 @@ import {CryptoDto} from '../../core/dto/crypto-dto';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {CryptoService} from '../../core/services/crypto/crypto.service';
+import {WalletService} from '../../core/services/wallet/wallet.service';
+import {UserService} from '../../core/services/user/user.service';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -58,6 +60,8 @@ export class WalletCreation implements OnInit {
         private _cryptoService: CryptoService,
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
+        private _walletService: WalletService,
+        private _userService: UserService,
     ) {
         this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
@@ -162,6 +166,20 @@ export class WalletCreation implements OnInit {
         this._snackBar.open(message, 'Close', {
             duration: 3000,
             panelClass: isError ? 'error-snackbar' : 'success-snackbar'
+        });
+    }
+
+    saveWallet(){
+        this._userService.getCurrentUser().subscribe(user => {
+            if (this.wallet){
+                this.wallet.userId = user.id;
+                console.log(this.wallet)
+                try {
+                    this._walletService.createWallet(this.wallet);
+                } catch (e) {
+                    this.showMessage('Error saving wallet', true);
+                }
+            }
         });
     }
 }

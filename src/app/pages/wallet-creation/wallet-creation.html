@@ -70,7 +70,9 @@
             mat-raised-button
             color="accent"
             [disabled]="wallet.crypto.length === 0"
-            class="backtest-button">
+            class="backtest-button"
+            (click)="saveWallet()"
+        >
             <span>🚀 Run Backtest</span>
         </button>
     </div>

@@ -12,8 +12,8 @@ export class WalletService {
     private apiUrl = environment.apiUrl + 'wallet/';
     private http = inject(HttpClient);
 
-    createWallet(wallet: WalletDto): Observable<WalletDto>{
-        return this.http.post<WalletDto>(`${this.apiUrl}${wallet.userId}/create`, wallet);
+    createWallet(userId: number): Observable<WalletDto>{
+        return this.http.post<WalletDto>(`${this.apiUrl}${userId}/create`, {});
     }
 
     getWalletFromUser(userId: number): Observable<WalletDto>{
@@ -22,6 +22,10 @@ export class WalletService {
 
     addCryptoToWalletFromUser(userId: number, crypto: CryptoDto): Observable<CryptoDto>{
         return this.http.post<CryptoDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID`, crypto);
+    }
+
+    walletExists(userId: number): Observable<boolean>{
+        return this.http.get<boolean>(`${this.apiUrl}/exists/${userId}`);
     }
 
 }
