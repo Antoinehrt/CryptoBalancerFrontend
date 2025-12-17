@@ -2,10 +2,10 @@
     <div class="elements">
         <form [formGroup]="assetForm" (ngSubmit)="addAsset()">
             <mat-form-field>
-                <mat-label>Crypto Asset</mat-label>
+                <mat-label>CryptoDto Asset</mat-label>
                 <mat-select formControlName="symbol" required>
-                    <mat-option *ngFor="let crypto of cryptoOptions" [value]="crypto.value">
-                        {{crypto.name}} ({{crypto.value}})
+                    <mat-option *ngFor="let symbol of symbols" [value]="symbol">
+                        {{symbol}}
                     </mat-option>
                 </mat-select>
             </mat-form-field>

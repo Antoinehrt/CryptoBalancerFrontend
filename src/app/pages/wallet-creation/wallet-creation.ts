@@ -10,6 +10,7 @@ import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/
 import {Asset} from '../../core/models/asset';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
+import {CryptoService} from '../../core/services/crypto/crypto.service';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -47,16 +48,11 @@ export class WalletCreation implements OnInit {
         {amount: 0, time: new Date(2024, 11, 1)}
     ];
 
-    cryptoOptions = [
-        {value: 'BTC', name: 'Bitcoin'},
-        {value: 'ETH', name: 'Ethereum'},
-        {value: 'LTC', name: 'Litecoin'},
-        {value: 'ADA', name: 'Cardano'},
-        {value: 'DOT', name: 'Polkadot'}
-    ];
+    symbols?: String[];
 
     constructor(
-        private pageTitleService: PageTitleService,
+        private _pageTitleService: PageTitleService,
+        private _cryptoService: CryptoService,
         private fb: FormBuilder,
         private snackBar: MatSnackBar
     ) {
@@ -67,30 +63,33 @@ export class WalletCreation implements OnInit {
     }
 
     ngOnInit() {
-        this.pageTitleService.setPageTitle('Wallet Creation');
+        this._pageTitleService.setPageTitle('Wallet Creation');
+        this._cryptoService.getAllSymbols().subscribe(symbols => {
+            this.symbols = symbols
+        })
     }
 
     addAsset() {
         if (this.assetForm.valid) {
             const formValue = this.assetForm.value;
-            const selectedCrypto = this.cryptoOptions.find(crypto => crypto.value === formValue.symbol);
+            const selectedSymbol = formValue.symbol;
 
-            if (selectedCrypto) {
+            if (selectedSymbol) {
                 const existingAssetIndex = this.assets.findIndex(asset => asset.symbol === formValue.symbol);
 
                 if (existingAssetIndex >= 0) {
                     this.assets[existingAssetIndex].quantity += parseFloat(formValue.quantity);
-                    this.showMessage(`Quantity updated for ${selectedCrypto.name}`);
+                    this.showMessage(`Quantity updated for ${selectedSymbol}`);
                 } else {
                     const newAsset: Asset = {
                         id: this.generateId(),
                         symbol: formValue.symbol,
-                        name: selectedCrypto.name,
+                        name: selectedSymbol,
                         quantity: parseFloat(formValue.quantity),
                         percentage: 0
                     };
                     this.assets.push(newAsset);
-                    this.showMessage(`${selectedCrypto.name} added to your wallet`);
+                    this.showMessage(`${selectedSymbol} added to your wallet`);
                 }
 
                 this.calculatePercentages();
