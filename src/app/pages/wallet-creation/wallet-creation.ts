@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
@@ -14,6 +14,7 @@ import {CommonModule} from '@angular/common';
 import {CryptoService} from '../../core/services/crypto/crypto.service';
 import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
+import {switchMap, forkJoin, of} from 'rxjs';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -60,7 +61,6 @@ export class WalletCreation {
             userId: 0,
             crypto: []
         };
-    }
 
         this.chartData = this.generateChartData();
         this._pageTitleService.setPageTitle('Wallet Creation');
@@ -90,7 +90,7 @@ export class WalletCreation {
         this._cryptoService.getCryptoPrice(symbol).subscribe({
             next: (price) => {
                 const newCrypto: CryptoDto = {
-                    id: this.generateNumericId(),
+                    id: 0,
                     symbol,
                     price: price.price,
                     quantity: qty
@@ -101,7 +101,7 @@ export class WalletCreation {
                 this.assetForm.reset();
             },
             error: () => {
-                this.showMessage(`Impossible to find the price for ${symbol}`, true);
+                this.showMessage(`Unable to retrieve price for${symbol}`, true);
             }
         });
     }
@@ -121,11 +121,6 @@ export class WalletCreation {
             this.percentages[c.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
         });
     }
-
-    private generateNumericId(): number {
-        return Math.floor(Math.random() * 1_000_000_000);
-    }
-
     getQuantity(symbol: string): number {
         const crypto = this.wallet.crypto.find(c => c.symbol === symbol);
         return crypto?.quantity || 0;
@@ -143,42 +138,45 @@ export class WalletCreation {
     }
 
     saveWallet(): void {
-        this._userService.getCurrentUser().subscribe({
-            next: (user) => {
-                this._walletService.createWallet(user.id).subscribe({
-                    next: () => {
-                        let completedCalls = 0;
-                        const totalCalls = this.wallet.crypto.length;
-
-                        if (totalCalls === 0) {
-                            this.showMessage('Wallet created successfully');
-                            return;
+        this._userService.getCurrentUser().pipe(
+            switchMap(user =>
+                this._walletService.createWallet(user.id).pipe(
+                    switchMap(() => {
+                        if (this.wallet.crypto.length === 0) {
+                            return of(null);
                         }
 
-                        this.wallet.crypto.forEach(crypto => {
-                            this._walletService.addCryptoToWalletFromUser(user.id, crypto).subscribe({
-                                next: () => {
-                                    completedCalls++;
-                                    if (completedCalls === totalCalls) {
-                                        this.showMessage('Wallet saved successfully');
-                                    }
-                                },
-                                error: () => {
-                                    this.showMessage(`Error adding ${crypto.symbol}`, true);
-                                }
-                            });
-                        });
-                    },
-                    error: () => this.showMessage('Error creating wallet', true)
-                });
+                        const addCryptoRequests = this.wallet.crypto.map(crypto =>
+                            this._walletService.addCryptoToWalletFromUser(user.id, crypto)
+                        );
+                        return forkJoin(addCryptoRequests);
+                    })
+                )
+            )
+        ).subscribe({
+            next: () => {
+                this.showMessage('Wallet saved successfully');
             },
-            error: () => this.showMessage('Error fetching user', true)
+            error: (err) => {
+                const errorMessage = this.getErrorMessage(err);
+                this.showMessage(errorMessage, true);
+            }
         });
+    }
+
     private generateChartData(): ChartDataPoint[] {
         return Array.from({ length: 12 }, (_, i) => ({
             amount: 0,
             time: new Date(new Date().getFullYear(), i, 1)
         }));
     }
+
+    private getErrorMessage(error: any): string {
+        if (!error) return 'An error occurred';
+        if (error.error?.message) return error.error.message;
+        if (error.status === 401) return 'Authentication failed. Please log in again.';
+        if (error.status === 403) return 'You do not have permission to perform this action.';
+        if (error.status === 500) return 'Server error. Please try again later.';
+        return 'Error saving wallet. Please try again.';
     }
 }
