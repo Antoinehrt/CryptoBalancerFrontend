@@ -31,27 +31,14 @@ import {UserService} from '../../core/services/user/user.service';
     templateUrl: './wallet-creation.html',
     styleUrl: './wallet-creation.css',
 })
-export class WalletCreation implements OnInit {
+export class WalletCreation {
     assetForm: FormGroup;
 
     wallet!: WalletDto;
 
     private percentages: Record<string, number> = {};
 
-    chartData: ChartDataPoint[] = [
-        {amount: 0, time: new Date(2024, 0, 1)},
-        {amount: 0, time: new Date(2024, 1, 1)},
-        {amount: 0, time: new Date(2024, 2, 1)},
-        {amount: 0, time: new Date(2024, 3, 1)},
-        {amount: 0, time: new Date(2024, 4, 1)},
-        {amount: 0, time: new Date(2024, 5, 1)},
-        {amount: 0, time: new Date(2024, 6, 1)},
-        {amount: 0, time: new Date(2024, 7, 1)},
-        {amount: 0, time: new Date(2024, 8, 1)},
-        {amount: 0, time: new Date(2024, 9, 1)},
-        {amount: 0, time: new Date(2024, 10, 1)},
-        {amount: 0, time: new Date(2024, 11, 1)}
-    ];
+    chartData: ChartDataPoint[];
 
     symbols?: string[];
 
@@ -75,7 +62,7 @@ export class WalletCreation implements OnInit {
         };
     }
 
-    ngOnInit(): void {
+        this.chartData = this.generateChartData();
         this._pageTitleService.setPageTitle('Wallet Creation');
         this._cryptoService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
@@ -187,5 +174,11 @@ export class WalletCreation implements OnInit {
             },
             error: () => this.showMessage('Error fetching user', true)
         });
+    private generateChartData(): ChartDataPoint[] {
+        return Array.from({ length: 12 }, (_, i) => ({
+            amount: 0,
+            time: new Date(new Date().getFullYear(), i, 1)
+        }));
+    }
     }
 }
