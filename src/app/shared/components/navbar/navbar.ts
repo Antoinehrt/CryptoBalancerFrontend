@@ -1,9 +1,10 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, DestroyRef, inject, ViewChild} from '@angular/core';
 import {MatSidenav, MatSidenavContainer, MatSidenavContent} from '@angular/material/sidenav';
 import {BreakpointObserver, Breakpoints} from '@angular/cdk/layout';
 import {RouterLink} from '@angular/router';
 import {MatListItem} from '@angular/material/list';
 import {AuthService} from '../../../core/services/auth/auth.service';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'app-navbar',
@@ -20,15 +21,20 @@ import {AuthService} from '../../../core/services/auth/auth.service';
 export class Navbar {
     @ViewChild('sidenav') sidenav!: MatSidenav;
     isHandset = false;
+    private destroyRef = inject(DestroyRef);
+    private breakpointObserver = inject(BreakpointObserver);
+    private _authenticationService = inject(AuthService);
 
-    constructor(private breakpointObserver: BreakpointObserver, private _authenticationService: AuthService) {
-        this.breakpointObserver.observe([Breakpoints.Handset]).subscribe(result => {
-            this.isHandset = result.matches;
-            if (this.sidenav) {
-                if (this.isHandset) this.sidenav.close();
-                else this.sidenav.open();
-            }
-        });
+    constructor() {
+        this.breakpointObserver
+            .observe([Breakpoints.Handset])
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(result => {
+                this.isHandset = result.matches;
+                if (this.sidenav) {
+                    this.isHandset ? this.sidenav.close() : this.sidenav.open();
+                }
+            });
     }
 
     ngAfterViewInit() {

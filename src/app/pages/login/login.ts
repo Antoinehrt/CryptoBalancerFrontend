@@ -18,9 +18,5 @@ export class Login {
   loginWithGoogle(): void {
     this.isLoading = true;
     this.authService.loginWithGoogle();
-
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 30000);
   }
 }

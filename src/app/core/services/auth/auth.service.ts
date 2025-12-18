@@ -22,12 +22,12 @@ export class AuthService {
         this.initializeAuth();
     }
 
-    private hasToken(): boolean {
-        return !!localStorage.getItem('authToken');
-    }
-
     private initializeAuth(): void {
         this.getCurrentUser().subscribe({
+            next: (user) => {
+                this.currentUserSubject.next(user);
+                this.isAuthenticatedSubject.next(true);
+            },
             error: () => {
                 this.currentUserSubject.next(null);
                 this.isAuthenticatedSubject.next(false);
@@ -63,10 +63,5 @@ export class AuthService {
                 this.isAuthenticatedSubject.next(false);
             }
         });
-    }
-
-    setToken(token: string): void {
-        localStorage.setItem('authToken', token);
-        this.isAuthenticatedSubject.next(true);
     }
 }
