@@ -7,9 +7,13 @@ import {MatSelect, MatOption} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Asset} from '../../core/models/asset';
+import {WalletDto} from '../../core/dto/wallet-dto';
+import {CryptoDto} from '../../core/dto/crypto-dto';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
+import {CryptoService} from '../../core/services/crypto/crypto.service';
+import {WalletService} from '../../core/services/wallet/wallet.service';
+import {UserService} from '../../core/services/user/user.service';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -30,7 +34,9 @@ import {CommonModule} from '@angular/common';
 export class WalletCreation implements OnInit {
     assetForm: FormGroup;
 
-    assets: Asset[] = [];
+    wallet!: WalletDto;
+
+    private percentages: Record<string, number> = {};
 
     chartData: ChartDataPoint[] = [
         {amount: 0, time: new Date(2024, 0, 1)},
@@ -47,83 +53,139 @@ export class WalletCreation implements OnInit {
         {amount: 0, time: new Date(2024, 11, 1)}
     ];
 
-    cryptoOptions = [
-        {value: 'BTC', name: 'Bitcoin'},
-        {value: 'ETH', name: 'Ethereum'},
-        {value: 'LTC', name: 'Litecoin'},
-        {value: 'ADA', name: 'Cardano'},
-        {value: 'DOT', name: 'Polkadot'}
-    ];
+    symbols?: string[];
 
     constructor(
-        private pageTitleService: PageTitleService,
-        private fb: FormBuilder,
-        private snackBar: MatSnackBar
+        private _pageTitleService: PageTitleService,
+        private _cryptoService: CryptoService,
+        private _fb: FormBuilder,
+        private _snackBar: MatSnackBar,
+        private _walletService: WalletService,
+        private _userService: UserService,
     ) {
-        this.assetForm = this.fb.group({
+        this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
             quantity: ['', [Validators.required, Validators.min(0.00001)]]
         });
+
+        this.wallet = {
+            id: 0,
+            userId: 0,
+            crypto: []
+        };
     }
 
-    ngOnInit() {
-        this.pageTitleService.setPageTitle('Wallet Creation');
+    ngOnInit(): void {
+        this._pageTitleService.setPageTitle('Wallet Creation');
+        this._cryptoService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
-    addAsset() {
-        if (this.assetForm.valid) {
-            const formValue = this.assetForm.value;
-            const selectedCrypto = this.cryptoOptions.find(crypto => crypto.value === formValue.symbol);
-
-            if (selectedCrypto) {
-                const existingAssetIndex = this.assets.findIndex(asset => asset.symbol === formValue.symbol);
-
-                if (existingAssetIndex >= 0) {
-                    this.assets[existingAssetIndex].quantity += parseFloat(formValue.quantity);
-                    this.showMessage(`Quantity updated for ${selectedCrypto.name}`);
-                } else {
-                    const newAsset: Asset = {
-                        id: this.generateId(),
-                        symbol: formValue.symbol,
-                        name: selectedCrypto.name,
-                        quantity: parseFloat(formValue.quantity),
-                        percentage: 0
-                    };
-                    this.assets.push(newAsset);
-                    this.showMessage(`${selectedCrypto.name} added to your wallet`);
-                }
-
-                this.calculatePercentages();
-
-                this.assetForm.reset();
-            }
-        } else {
+    addAsset(): void {
+        if (!this.assetForm.valid) {
             this.showMessage('Please complete every field', true);
+            return;
         }
-    }
 
-    removeAsset(assetId: string) {
-        this.assets = this.assets.filter(asset => asset.id !== assetId);
-        this.calculatePercentages();
-        this.showMessage('Asset supprimé du portefeuille');
-    }
+        const {symbol, quantity} = this.assetForm.value;
+        if (!symbol) return;
 
-    private calculatePercentages() {
-        const totalQuantity = this.assets.reduce((sum, asset) => sum + asset.quantity, 0);
+        const qty = parseFloat(quantity);
+        const existing = this.wallet.crypto.find(c => c.symbol === symbol);
 
-        this.assets.forEach(asset => {
-            asset.percentage = totalQuantity > 0 ? Math.round((asset.quantity / totalQuantity) * 10000) / 100 : 0;
+        if (existing) {
+            existing.quantity = (existing.quantity || 0) + qty;
+            this.showMessage(`Quantity updated for ${symbol}`);
+            this.calculatePercentages();
+            this.assetForm.reset();
+            return;
+        }
+
+        this._cryptoService.getCryptoPrice(symbol).subscribe({
+            next: (price) => {
+                const newCrypto: CryptoDto = {
+                    id: this.generateNumericId(),
+                    symbol,
+                    price: price.price,
+                    quantity: qty
+                };
+                this.wallet.crypto.push(newCrypto);
+                this.showMessage(`${symbol} added to your wallet`);
+                this.calculatePercentages();
+                this.assetForm.reset();
+            },
+            error: () => {
+                this.showMessage(`Impossible to find the price for ${symbol}`, true);
+            }
         });
     }
 
-    private generateId(): string {
-        return Math.random().toString(36).substr(2, 9);
+    removeCrypto(symbol: string): void {
+        this.wallet.crypto = this.wallet.crypto.filter(c => c.symbol !== symbol);
+        delete this.percentages[symbol];
+        this.calculatePercentages();
+        this.showMessage('Asset removed from the wallet');
     }
 
-    private showMessage(message: string, isError = false) {
-        this.snackBar.open(message, 'Close', {
+    private calculatePercentages(): void {
+        const totalValue = this.wallet.crypto.reduce((sum, c) => sum + (c.quantity || 0) * (c.price ?? 0), 0);
+
+        this.wallet.crypto.forEach(c => {
+            const value = (c.quantity || 0) * (c.price ?? 0);
+            this.percentages[c.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
+        });
+    }
+
+    private generateNumericId(): number {
+        return Math.floor(Math.random() * 1_000_000_000);
+    }
+
+    getQuantity(symbol: string): number {
+        const crypto = this.wallet.crypto.find(c => c.symbol === symbol);
+        return crypto?.quantity || 0;
+    }
+
+    getPercentage(symbol: string): number {
+        return this.percentages[symbol] || 0;
+    }
+
+    private showMessage(message: string, isError = false): void {
+        this._snackBar.open(message, 'Close', {
             duration: 3000,
             panelClass: isError ? 'error-snackbar' : 'success-snackbar'
+        });
+    }
+
+    saveWallet(): void {
+        this._userService.getCurrentUser().subscribe({
+            next: (user) => {
+                this._walletService.createWallet(user.id).subscribe({
+                    next: () => {
+                        let completedCalls = 0;
+                        const totalCalls = this.wallet.crypto.length;
+
+                        if (totalCalls === 0) {
+                            this.showMessage('Wallet created successfully');
+                            return;
+                        }
+
+                        this.wallet.crypto.forEach(crypto => {
+                            this._walletService.addCryptoToWalletFromUser(user.id, crypto).subscribe({
+                                next: () => {
+                                    completedCalls++;
+                                    if (completedCalls === totalCalls) {
+                                        this.showMessage('Wallet saved successfully');
+                                    }
+                                },
+                                error: () => {
+                                    this.showMessage(`Error adding ${crypto.symbol}`, true);
+                                }
+                            });
+                        });
+                    },
+                    error: () => this.showMessage('Error creating wallet', true)
+                });
+            },
+            error: () => this.showMessage('Error fetching user', true)
         });
     }
 }
