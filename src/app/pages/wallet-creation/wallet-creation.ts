@@ -121,6 +121,7 @@ export class WalletCreation {
             this.percentages[c.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
         });
     }
+
     getQuantity(symbol: string): number {
         const crypto = this.wallet.crypto.find(c => c.symbol === symbol);
         return crypto?.quantity || 0;
