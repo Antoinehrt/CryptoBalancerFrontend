@@ -45,7 +45,7 @@
                     <strong>{{ crypto.symbol }}</strong>
                 </td>
                 <td>{{ getQuantity(crypto.symbol) | number:'1.2-8' }}</td>
-                <td>{{ crypto.price | currency:'USD':'symbol' }}</td>
+                <td>{{ crypto.price | currency:'EUR':'symbol' }}</td>
                 <td>
                     <span class="percentage">{{ getPercentage(crypto.symbol) }}%</span>
                 </td>
