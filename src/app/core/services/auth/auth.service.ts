@@ -18,6 +18,9 @@ export class AuthService {
     private currentUserSubject = new BehaviorSubject<UserDto | null>(null);
     currentUser$ = this.currentUserSubject.asObservable();
 
+    private authInitializedSubject = new BehaviorSubject<boolean>(false);
+    authInitialized$ = this.authInitializedSubject.asObservable();
+
     constructor() {
         this.initializeAuth();
     }
@@ -27,10 +30,12 @@ export class AuthService {
             next: (user) => {
                 this.currentUserSubject.next(user);
                 this.isAuthenticatedSubject.next(true);
+                this.authInitializedSubject.next(true);
             },
             error: () => {
                 this.currentUserSubject.next(null);
                 this.isAuthenticatedSubject.next(false);
+                this.authInitializedSubject.next(true);
             }
         });
     }
