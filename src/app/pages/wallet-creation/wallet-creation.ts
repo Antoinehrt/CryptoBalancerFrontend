@@ -17,6 +17,7 @@ import {Wallet} from '../../core/models/wallet';
 import {Asset} from '../../core/models/asset';
 import {AssetDto} from '../../core/dto/asset-dto';
 import {MatIcon} from '@angular/material/icon';
+import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -52,6 +53,7 @@ export class WalletCreation {
         private _snackBar: MatSnackBar,
         private _walletService: WalletService,
         private _userService: UserService,
+        private _walletFacadeService: WalletFacadeService,
     ) {
         this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
@@ -78,7 +80,7 @@ export class WalletCreation {
         const existing = this.wallet.items.find(a => a.symbol === symbol);
         if (existing) {
             existing.quantity += qty;
-            this.recalculatePercentages();
+            this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
             this.assetForm.reset();
             return;
         }
@@ -92,7 +94,7 @@ export class WalletCreation {
                     percentage: 0
                 });
 
-                this.recalculatePercentages();
+                this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
                 this.assetForm.reset();
             }
         });
@@ -100,7 +102,7 @@ export class WalletCreation {
 
     removeAsset(symbol: string): void {
         this.wallet.items = this.wallet.items.filter(a => a.symbol !== symbol);
-        this.recalculatePercentages();
+        this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
     }
 
     saveWallet(): void {
@@ -128,18 +130,6 @@ export class WalletCreation {
                 const errorMessage = this.getErrorMessage(err);
                 this.showMessage(errorMessage, true);
             }
-        });
-    }
-
-    private recalculatePercentages(): void {
-        const total = this.wallet.items.reduce(
-            (sum, a) => sum + a.quantity * a.price, 0
-        );
-
-        this.wallet.items.forEach(a => {
-            a.percentage = total
-                ? +(a.quantity * a.price / total * 100).toFixed(2)
-                : 0;
         });
     }
 

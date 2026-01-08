@@ -5,6 +5,7 @@ import {Injectable} from "@angular/core";
 import {forkJoin, Observable, of, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Asset} from '../../models/asset';
+import {Wallet} from '../../models/wallet';
 
 @Injectable({ providedIn: 'root' })
 export class WalletFacadeService {
@@ -12,7 +13,7 @@ export class WalletFacadeService {
     constructor(
         private userService: UserService,
         private walletService: WalletService,
-        private cryptoService: AssetService
+        private _assetService: AssetService
     ) {}
 
     loadWallet(): Observable<Asset[]> {
@@ -27,7 +28,7 @@ export class WalletFacadeService {
 
                 return forkJoin(
                     wallet.items.map(item =>
-                        this.cryptoService.getAssetPrice(item.symbol).pipe(
+                        this._assetService.getAssetPrice(item.symbol).pipe(
                             map(price => ({
                                 id: item.id ?? 0,
                                 symbol: item.symbol,
@@ -52,5 +53,18 @@ export class WalletFacadeService {
                 }));
             })
         );
+    }
+
+    recalculatePercentages(wallet: Wallet): Wallet {
+        const total = wallet.items.reduce(
+            (sum, a) => sum + a.quantity * a.price, 0
+        );
+
+        wallet.items.forEach(a => {
+            a.percentage = total
+                ? +(a.quantity * a.price / total * 100).toFixed(2)
+                : 0;
+        });
+        return wallet;
     }
 }
