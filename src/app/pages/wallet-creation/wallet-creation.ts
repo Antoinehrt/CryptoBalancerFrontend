@@ -5,7 +5,7 @@ import {ChartComponent} from '../../shared/components/chart/chart';
 import {ChartDataPoint} from '../../core/models/chart-data-point';
 import {MatSelect, MatOption} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButtonModule, MatIconButton} from '@angular/material/button';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
@@ -16,6 +16,7 @@ import {switchMap, forkJoin, of} from 'rxjs';
 import {Wallet} from '../../core/models/wallet';
 import {Asset} from '../../core/models/asset';
 import {AssetDto} from '../../core/dto/asset-dto';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -29,6 +30,8 @@ import {AssetDto} from '../../core/dto/asset-dto';
         MatButtonModule,
         ChartComponent,
         ReactiveFormsModule,
+        MatIconButton,
+        MatIcon
     ],
     templateUrl: './wallet-creation.html',
     styleUrl: './wallet-creation.css',
@@ -44,7 +47,7 @@ export class WalletCreation {
 
     constructor(
         private _pageTitleService: PageTitleService,
-        protected _cryptoService: AssetService,
+        protected _assetService: AssetService,
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
         private _walletService: WalletService,
@@ -63,7 +66,7 @@ export class WalletCreation {
 
         this.chartData = this.generateChartData();
         this._pageTitleService.setPageTitle('Wallet Creation');
-        this._cryptoService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
+        this._assetService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
     addAsset(): void {
@@ -80,7 +83,7 @@ export class WalletCreation {
             return;
         }
 
-        this._cryptoService.getAssetPrice(symbol).subscribe({
+        this._assetService.getAssetPrice(symbol).subscribe({
             next: ({ price }) => {
                 this.wallet.items.push({
                     symbol,
@@ -95,7 +98,7 @@ export class WalletCreation {
         });
     }
 
-    removeCrypto(symbol: string): void {
+    removeAsset(symbol: string): void {
         this.wallet.items = this.wallet.items.filter(a => a.symbol !== symbol);
         this.recalculatePercentages();
     }
@@ -109,11 +112,11 @@ export class WalletCreation {
                             return of(null);
                         }
 
-                        const addCryptoRequests = this.wallet.items.map(asset =>
-                            this._walletService.addCryptoToWalletFromUser(user.id, this.toAssetDto(asset))
+                        const addAssetRequests = this.wallet.items.map(asset =>
+                            this._walletService.addAssetToWalletFromUser(user.id, this.toAssetDto(asset))
                         );
 
-                        return forkJoin(addCryptoRequests);
+                        return forkJoin(addAssetRequests);
                     })
                 )
             )

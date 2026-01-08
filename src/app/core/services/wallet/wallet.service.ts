@@ -20,9 +20,9 @@ export class WalletService {
         return this.http.get<WalletDto>(`${this.apiUrl}getWalletByUserId/${userId}`);
     }
 
-    addCryptoToWalletFromUser(userId: number, crypto: AssetDto): Observable<WalletDto>{
-        const symbol = crypto.symbol;
-        const amount = crypto.quantity || 0;
+    addAssetToWalletFromUser(userId: number, assetDto: AssetDto): Observable<WalletDto>{
+        const symbol = assetDto.symbol;
+        const amount = assetDto.quantity || 0;
         return this.http.post<WalletDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID?symbol=${symbol}&amount=${amount}`, {});
     }
 

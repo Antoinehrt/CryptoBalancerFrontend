@@ -43,19 +43,17 @@
             </thead>
 
             <tbody>
-            <tr *ngFor="let crypto of wallet.items; trackBy: trackBySymbol">
-                <td><strong>{{ crypto.symbol }}</strong></td>
-                <td>{{ crypto.quantity | number:'1.2-8' }}</td>
-                <td>{{ crypto.price | currency:'EUR':'symbol' }}</td>
+            <tr *ngFor="let asset of wallet.items; trackBy: trackBySymbol">
+                <td><strong>{{ asset.symbol }}</strong></td>
+                <td>{{ asset.quantity | number:'1.2-8' }}</td>
+                <td>{{ asset.price | currency:'EUR':'symbol' }}</td>
                 <td>
                         <span class="percentage">
-                            {{ crypto.percentage }}%
+                            {{ asset.percentage }}%
                         </span>
                 </td>
                 <td>
-                    <button mat-icon-button color="warn" (click)="removeCrypto(crypto.symbol)" title="Remove asset">
-                        ❌
-                    </button>
+                    <button mat-icon-button class="btn secondary" (click)="removeAsset(asset.symbol)" title="Remove asset"><mat-icon>delete</mat-icon></button>
                 </td>
             </tr>
             </tbody>
