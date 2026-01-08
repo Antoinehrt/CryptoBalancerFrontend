@@ -20,6 +20,10 @@
                             <td>{{ asset.quantity | number:'1.2-8' }}</td>
                             <td>{{ asset.price | currency:'EUR' }}</td>
                             <td>{{ asset.percentage }}%</td>
+                            <td>
+                                <button mat-icon-button class="btn primary" (click)="modifyAsset(asset.symbol)" title="Modify asset"><mat-icon>edit</mat-icon></button>
+                                <button mat-icon-button class="btn secondary" (click)="removeAsset(asset.symbol)" title="Remove asset"><mat-icon>delete</mat-icon></button>
+                            </td>
                         </tr>
                     } @empty {
                         <tr>
