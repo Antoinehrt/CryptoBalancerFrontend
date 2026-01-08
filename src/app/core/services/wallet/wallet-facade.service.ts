@@ -31,7 +31,7 @@ export class WalletFacadeService {
                             map(price => ({
                                 id: item.id ?? 0,
                                 symbol: item.symbol,
-                                quantity: item.quantity ?? 0,
+                                quantity: item.amount ?? 0,
                                 price: price.price,
                                 percentage: 0
                             }) as Asset)

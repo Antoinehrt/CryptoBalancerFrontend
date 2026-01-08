@@ -22,7 +22,7 @@ export class WalletService {
 
     addAssetToWalletFromUser(userId: number, assetDto: AssetDto): Observable<WalletDto>{
         const symbol = assetDto.symbol;
-        const amount = assetDto.quantity || 0;
+        const amount = assetDto.amount || 0;
         return this.http.post<WalletDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID?symbol=${symbol}&amount=${amount}`, {});
     }
 

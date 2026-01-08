@@ -151,7 +151,7 @@ export class WalletCreation {
         return {
             id: 0,
             symbol: asset.symbol,
-            quantity: asset.quantity,
+            amount: asset.quantity,
         };
     }
 
