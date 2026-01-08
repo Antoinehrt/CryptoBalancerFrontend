@@ -1,15 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import {WalletDto} from '../../dto/wallet-dto';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {CryptoDto} from '../../dto/crypto-dto';
 
 @Injectable({
     providedIn: 'root',
 })
-export class CryptoService {
+export class AssetService {
     private apiUrl = environment.apiUrl + 'crypto/';
     private http = inject(HttpClient);
 
@@ -21,8 +19,7 @@ export class CryptoService {
         );
     }
 
-    getCryptoPrice(symbol: string): Observable<CryptoDto>{
-        return this.http.get<CryptoDto>(`${this.apiUrl}price/${symbol}`)
+    getAssetPrice(symbol: string): Observable<{price: number}>{
+        return this.http.get<{price: number}>(`${this.apiUrl}price/${symbol}`)
     }
-
 }

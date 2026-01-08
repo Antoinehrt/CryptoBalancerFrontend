@@ -2,7 +2,7 @@
     <div class="elements">
         <form [formGroup]="assetForm" (ngSubmit)="addAsset()">
             <mat-form-field>
-                <mat-label>CryptoDto Asset</mat-label>
+                <mat-label>Asset</mat-label>
                 <mat-select formControlName="symbol" required>
                     <mat-option *ngFor="let symbol of symbols" [value]="symbol">
                         {{ symbol }}
@@ -20,16 +20,18 @@
             </button>
         </form>
     </div>
+
     <div class="elements">
         <app-chart
             [datas]="chartData"
             [cryptoSymbol]="''">
         </app-chart>
     </div>
+
     <div class="elements">
         <h3>Assets</h3>
 
-        <table class="assets-table" *ngIf="wallet.crypto.length > 0; else noAssets">
+        <table class="assets-table" *ngIf="wallet.items.length > 0; else noAssets">
             <thead>
             <tr>
                 <th>Asset</th>
@@ -39,15 +41,16 @@
                 <th>Actions</th>
             </tr>
             </thead>
+
             <tbody>
-            <tr *ngFor="let crypto of wallet.crypto">
-                <td>
-                    <strong>{{ crypto.symbol }}</strong>
-                </td>
-                <td>{{ getQuantity(crypto.symbol) | number:'1.2-8' }}</td>
+            <tr *ngFor="let crypto of wallet.items; trackBy: trackBySymbol">
+                <td><strong>{{ crypto.symbol }}</strong></td>
+                <td>{{ crypto.quantity | number:'1.2-8' }}</td>
                 <td>{{ crypto.price | currency:'EUR':'symbol' }}</td>
                 <td>
-                    <span class="percentage">{{ getPercentage(crypto.symbol) }}%</span>
+                        <span class="percentage">
+                            {{ crypto.percentage }}%
+                        </span>
                 </td>
                 <td>
                     <button mat-icon-button color="warn" (click)="removeCrypto(crypto.symbol)" title="Remove asset">
@@ -69,8 +72,8 @@
         <button
             mat-raised-button
             color="accent"
-            [disabled]="wallet.crypto.length === 0"
             class="backtest-button"
+            [disabled]="wallet.items.length === 0"
             (click)="saveWallet()"
         >
             <span>🚀 Run Backtest</span>

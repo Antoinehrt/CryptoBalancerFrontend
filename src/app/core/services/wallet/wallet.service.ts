@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import {WalletDto} from '../../dto/wallet-dto';
 import {Observable} from 'rxjs';
-import {CryptoDto} from '../../dto/crypto-dto';
+import {AssetDto} from '../../dto/asset-dto';
 
 @Injectable({
     providedIn: 'root',
@@ -20,7 +20,7 @@ export class WalletService {
         return this.http.get<WalletDto>(`${this.apiUrl}getWalletByUserId/${userId}`);
     }
 
-    addCryptoToWalletFromUser(userId: number, crypto: CryptoDto): Observable<WalletDto>{
+    addCryptoToWalletFromUser(userId: number, crypto: AssetDto): Observable<WalletDto>{
         const symbol = crypto.symbol;
         const amount = crypto.quantity || 0;
         return this.http.post<WalletDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID?symbol=${symbol}&amount=${amount}`, {});
