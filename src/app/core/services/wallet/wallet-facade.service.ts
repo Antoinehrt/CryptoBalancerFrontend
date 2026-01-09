@@ -16,11 +16,8 @@ export class WalletFacadeService {
         private _assetService: AssetService
     ) {}
 
-    loadWallet(): Observable<Asset[]> {
-        return this.userService.getCurrentUser().pipe(
-            switchMap(user =>
-                this.walletService.getWalletFromUser(user.id)
-            ),
+    loadWallet(userId: number): Observable<Asset[]> {
+        return this.walletService.getWalletFromUser(userId).pipe(
             switchMap(wallet => {
                 if (!wallet.items?.length) {
                     return of([]);

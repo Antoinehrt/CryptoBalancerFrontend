@@ -30,4 +30,13 @@ export class WalletService {
         return this.http.get<boolean>(`${this.apiUrl}exists/${userId}`);
     }
 
+    removeAssetFromWallet(userId: number, symbol: string): Observable<WalletDto>{
+        return this.http.delete<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}`);
+    }
+
+    updateAssetQuantityInWallet(userId: number, symbol: string, amount: number): Observable<WalletDto>{
+        return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}?amount=${amount}`, {});
+    }
+
+
 }
