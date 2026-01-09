@@ -9,6 +9,8 @@ import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
 import {switchMap} from 'rxjs';
 import {FormsModule} from '@angular/forms';
+import {CandleService} from '../../core/services/candle/candle.service';
+import {CandleDto} from '../../core/dto/candle-dto';
 
 @Component({
     selector: 'app-user-wallet',
@@ -30,11 +32,13 @@ export class UserWallet implements OnInit {
     private _walletService = inject(WalletService);
     private _walletFacadeService = inject(WalletFacadeService);
     private _pageTitle = inject(PageTitleService);
+    private _candleService = inject(CandleService);
 
     assets = signal<Asset[]>([]);
     isLoading = signal(true);
     editingAssetSymbol = signal<string | null>(null);
     editingValues = signal<{ quantity: number } | null>(null);
+    candles?: CandleDto[];
 
 
     private userId: number = 0;
@@ -54,6 +58,13 @@ export class UserWallet implements OnInit {
             },
             error: () => this.isLoading.set(false)
         });
+
+        this._candleService.getCandlesBySymbol('BTCEUR').subscribe(
+            candles => {
+                this.candles = candles
+                console.log(candles)
+            }
+        )
     }
 
     protected modifyAsset(symbol: string, quantity: number) {
@@ -64,8 +75,6 @@ export class UserWallet implements OnInit {
            next: assets => this.updateAssets(assets),
             error: (error) => console.error('Error while updating quantity', error),
         });
-
-
     }
 
     protected removeAsset(symbol: string) {
