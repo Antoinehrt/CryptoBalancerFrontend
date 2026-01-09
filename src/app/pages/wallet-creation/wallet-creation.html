@@ -46,7 +46,7 @@
             <tr *ngFor="let asset of wallet.items; trackBy: trackBySymbol">
                 <td><strong>{{ asset.symbol }}</strong></td>
                 <td>{{ asset.quantity | number:'1.2-8' }}</td>
-                <td>{{ asset.price | currency:'EUR':'symbol' }}</td>
+                <td>{{ asset.price * asset.quantity | currency:'EUR':'symbol' }}</td>
                 <td>
                         <span class="percentage">
                             {{ asset.percentage }}%
