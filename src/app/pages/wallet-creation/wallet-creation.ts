@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
-import {ChartDataPoint} from '../../core/models/chart-data-point';
 import {MatSelect, MatOption} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule, MatIconButton} from '@angular/material/button';
@@ -18,6 +17,7 @@ import {Asset} from '../../core/models/asset';
 import {AssetDto} from '../../core/dto/asset-dto';
 import {MatIcon} from '@angular/material/icon';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
+import {Candle} from '../../core/models/candle';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -42,7 +42,7 @@ export class WalletCreation {
 
     wallet!: Wallet;
 
-    chartData: ChartDataPoint[];
+    chartData: Candle[];
 
     symbols?: string[];
 
@@ -153,10 +153,15 @@ export class WalletCreation {
         });
     }
 
-    private generateChartData(): ChartDataPoint[] {
+    private generateChartData(): Candle[] {
         return Array.from({ length: 12 }, (_, i) => ({
-            amount: 0,
-            time: new Date(new Date().getFullYear(), i, 1)
+            id: i,
+            symbol: '',
+            open_time: new Date(new Date().getFullYear(), i, 1),
+            open: 0,
+            close: 0,
+            high: 0,
+            low: 0
         }));
     }
 
