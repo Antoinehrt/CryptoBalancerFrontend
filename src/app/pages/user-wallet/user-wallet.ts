@@ -8,9 +8,14 @@ import {MatIcon} from '@angular/material/icon';
 import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
 import {switchMap} from 'rxjs';
-import {FormsModule} from '@angular/forms';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CandleService} from '../../core/services/candle/candle.service';
 import {CandleDto} from '../../core/dto/candle-dto';
+import {ChartComponent} from '../../shared/components/chart/chart';
+import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
+import {AssetService} from '../../core/services/asset/asset.service';
+import {Candle} from '../../core/models/candle';
 
 @Component({
     selector: 'app-user-wallet',
@@ -21,7 +26,13 @@ import {CandleDto} from '../../core/dto/candle-dto';
         DecimalPipe,
         MatIconButton,
         MatIcon,
-        FormsModule
+        FormsModule,
+        ChartComponent,
+        MatFormField,
+        MatLabel,
+        MatOption,
+        MatSelect,
+        ReactiveFormsModule
     ],
     templateUrl: './user-wallet.html',
     styleUrl: './user-wallet.css',
@@ -33,13 +44,29 @@ export class UserWallet implements OnInit {
     private _walletFacadeService = inject(WalletFacadeService);
     private _pageTitle = inject(PageTitleService);
     private _candleService = inject(CandleService);
+    private _assetService = inject(AssetService);
+    private _fb = inject(FormBuilder);
 
     assets = signal<Asset[]>([]);
     isLoading = signal(true);
     editingAssetSymbol = signal<string | null>(null);
     editingValues = signal<{ quantity: number } | null>(null);
-    candles?: CandleDto[];
 
+    candles: Candle[] = [];
+    symbols: string[] = [];
+    symbolForm: FormGroup;
+    displayedSymbol: string = "";
+
+    /*
+    * TODO: ajouter une vérification => si dans modifier wallet, wallet.length = 0 alors redirect to creation wallet
+    *
+    * */
+
+    constructor() {
+        this.symbolForm = this._fb.group({
+            symbol: [''],
+        });
+    }
 
     private userId: number = 0;
 
@@ -54,17 +81,14 @@ export class UserWallet implements OnInit {
         ).subscribe({
             next: assets => {
                 this.assets.set(assets);
+                this.onSymbolChange(assets[0].symbol);
+                assets.forEach(value => {
+                    this.symbols.push(value.symbol);
+                })
                 this.isLoading.set(false);
             },
             error: () => this.isLoading.set(false)
         });
-
-        this._candleService.getCandlesBySymbol('BTCEUR').subscribe(
-            candles => {
-                this.candles = candles
-                console.log(candles)
-            }
-        )
     }
 
     protected modifyAsset(symbol: string, quantity: number) {
@@ -109,5 +133,21 @@ export class UserWallet implements OnInit {
 
     protected isEditing(symbol: string): boolean {
         return this.editingAssetSymbol() === symbol;
+    }
+
+    protected onSymbolChange(event: any) {
+        this.displayedSymbol = event.value;
+        this._candleService.getCandlesBySymbol(this.displayedSymbol).subscribe(
+            (candlesDto: CandleDto[]) => {
+                this.candles = candlesDto.map(dto => {
+                    const c: any = { ...dto };
+                    if ((dto as any).timestamp !== undefined && (typeof (dto as any).timestamp === 'string' || typeof (dto as any).timestamp === 'number')) {
+                        c.timestamp = new Date((dto as any).timestamp);
+                    }
+                    return c as Candle;
+                });
+                console.log(this.candles);
+            }
+        )
     }
 }
