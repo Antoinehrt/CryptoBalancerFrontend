@@ -16,6 +16,8 @@ import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {CandleModel} from '../../core/models/candle.model';
 import {Router} from '@angular/router';
+import {StrategyCard} from '../../shared/components/strategy-card/strategy-card';
+import {StrategyModel} from '../../core/models/strategy.model';
 
 @Component({
     selector: 'app-user-wallet',
@@ -32,7 +34,8 @@ import {Router} from '@angular/router';
         MatLabel,
         MatOption,
         MatSelect,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        StrategyCard
     ],
     templateUrl: './user-wallet.html',
     styleUrl: './user-wallet.css',
@@ -51,6 +54,15 @@ export class UserWallet implements OnInit {
     isLoading = signal(true);
     editingAssetSymbol = signal<string | null>(null);
     editingValues = signal<{ quantity: number } | null>(null);
+
+    tmpData: StrategyModel = {
+        id: 0,
+        icon: '',
+        title: 'Sample Strategy',
+        description: 'This is a sample strategy description.',
+        marketType: 'Stocks',
+        riskProfile: 3
+    }
 
     candles: CandleModel[] = [];
     symbols: string[] = [];
