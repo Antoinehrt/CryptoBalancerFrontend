@@ -1,4 +1,4 @@
-export interface Candle{
+export interface CandleModel {
     id: number,
     symbol: string,
     open_time: Date,

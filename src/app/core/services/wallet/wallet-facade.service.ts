@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import {forkJoin, Observable, of, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Asset} from '../../models/asset';
-import {Wallet} from '../../models/wallet';
+import {AssetModel} from '../../models/asset.model';
+import {WalletModel} from '../../models/wallet.model';
 import {WalletService} from './wallet.service';
 import {AssetService} from '../asset/asset.service';
 
@@ -11,7 +11,7 @@ export class WalletFacadeService {
     private _walletService = inject(WalletService)
     private _assetService = inject(AssetService);
 
-    loadWallet(userId: number): Observable<Asset[]> {
+    loadWallet(userId: number): Observable<AssetModel[]> {
         return this._walletService.getWalletFromUser(userId).pipe(
             switchMap(wallet => {
                 if (!wallet.items?.length) {
@@ -27,7 +27,7 @@ export class WalletFacadeService {
                                 quantity: item.amount ?? 0,
                                 price: price.price,
                                 percentage: 0
-                            }) as Asset)
+                            }) as AssetModel)
                         )
                     )
                 );
@@ -47,7 +47,7 @@ export class WalletFacadeService {
         );
     }
 
-    recalculatePercentages(wallet: Wallet): Wallet {
+    recalculatePercentages(wallet: WalletModel): WalletModel {
         const total = wallet.items.reduce(
             (sum, a) => sum + a.quantity * a.price, 0
         );

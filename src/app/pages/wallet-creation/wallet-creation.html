@@ -2,7 +2,7 @@
   <div class="elements">
     <form [formGroup]="assetForm" (ngSubmit)="addAsset()">
       <mat-form-field>
-        <mat-label>Asset</mat-label>
+        <mat-label>AssetModel</mat-label>
         <mat-select formControlName="symbol" required>
           @for (symbol of symbols; track symbol) {
             <mat-option [value]="symbol">
@@ -18,7 +18,7 @@
       </mat-form-field>
 
       <button mat-raised-button color="primary" type="submit" [disabled]="assetForm.invalid">
-        Add Asset
+        Add AssetModel
       </button>
     </form>
   </div>
@@ -36,7 +36,7 @@
       <table class="assets-table">
         <thead>
         <tr>
-          <th>Asset</th>
+          <th>AssetModel</th>
           <th>Quantity</th>
           <th>Price</th>
           <th>Percentage</th>

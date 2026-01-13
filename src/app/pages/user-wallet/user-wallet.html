@@ -3,7 +3,7 @@
   <div class="form">
     <form [formGroup]="symbolForm">
       <mat-form-field>
-        <mat-label>Asset</mat-label>
+        <mat-label>AssetModel</mat-label>
 
         <mat-select formControlName="symbol" required (selectionChange)="onSymbolChange($event)">
           @for (symbol of symbols; track symbol){
@@ -28,7 +28,7 @@
         <table class="assets-table">
           <thead>
           <tr>
-            <th>Asset</th>
+            <th>AssetModel</th>
             <th>Quantity</th>
             <th>Price</th>
             <th>Percentage</th>

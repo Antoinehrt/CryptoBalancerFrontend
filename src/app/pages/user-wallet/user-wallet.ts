@@ -2,7 +2,7 @@ import {Component, inject, OnInit, signal} from '@angular/core';
 import {CommonModule, CurrencyPipe, DecimalPipe} from '@angular/common';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
-import {Asset} from '../../core/models/asset';
+import {AssetModel} from '../../core/models/asset.model';
 import {MatIconButton} from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {WalletService} from '../../core/services/wallet/wallet.service';
@@ -14,7 +14,7 @@ import {CandleDto} from '../../core/dto/candle.dto';
 import {ChartComponent} from '../../shared/components/chart/chart';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {Candle} from '../../core/models/candle';
+import {CandleModel} from '../../core/models/candle.model';
 import {Router} from '@angular/router';
 
 @Component({
@@ -47,12 +47,12 @@ export class UserWallet implements OnInit {
     private _fb = inject(FormBuilder);
     private router = inject(Router);
 
-    assets = signal<Asset[]>([]);
+    assets = signal<AssetModel[]>([]);
     isLoading = signal(true);
     editingAssetSymbol = signal<string | null>(null);
     editingValues = signal<{ quantity: number } | null>(null);
 
-    candles: Candle[] = [];
+    candles: CandleModel[] = [];
     symbols: string[] = [];
     symbolForm: FormGroup;
     displayedSymbol: string = "";
@@ -66,7 +66,7 @@ export class UserWallet implements OnInit {
     private userId: number = 0;
 
     ngOnInit(): void {
-        this._pageTitle.setPageTitle('My Wallet');
+        this._pageTitle.setPageTitle('My WalletModel');
 
         this._userService.getCurrentUser().pipe(
             switchMap(user => {
@@ -117,12 +117,12 @@ export class UserWallet implements OnInit {
         });
     }
 
-    private updateAssets(assets: Asset[]){
+    private updateAssets(assets: AssetModel[]){
         this.assets.set(assets);
         this.isLoading.set(false);
     }
 
-    protected startEdit(asset: Asset) {
+    protected startEdit(asset: AssetModel) {
         this.editingAssetSymbol.set(asset.symbol);
         this.editingValues.set({quantity: asset.quantity});
     }
@@ -151,7 +151,7 @@ export class UserWallet implements OnInit {
                     if ((dto as any).timestamp !== undefined && (typeof (dto as any).timestamp === 'string' || typeof (dto as any).timestamp === 'number')) {
                         c.timestamp = new Date((dto as any).timestamp);
                     }
-                    return c as Candle;
+                    return c as CandleModel;
                 });
                 console.log(this.candles);
             }
