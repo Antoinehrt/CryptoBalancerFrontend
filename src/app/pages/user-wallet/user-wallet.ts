@@ -14,8 +14,8 @@ import {CandleDto} from '../../core/dto/candle-dto';
 import {ChartComponent} from '../../shared/components/chart/chart';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
-import {AssetService} from '../../core/services/asset/asset.service';
 import {Candle} from '../../core/models/candle';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-user-wallet',
@@ -44,8 +44,8 @@ export class UserWallet implements OnInit {
     private _walletFacadeService = inject(WalletFacadeService);
     private _pageTitle = inject(PageTitleService);
     private _candleService = inject(CandleService);
-    private _assetService = inject(AssetService);
     private _fb = inject(FormBuilder);
+    private router = inject(Router);
 
     assets = signal<Asset[]>([]);
     isLoading = signal(true);
@@ -56,11 +56,6 @@ export class UserWallet implements OnInit {
     symbols: string[] = [];
     symbolForm: FormGroup;
     displayedSymbol: string = "";
-
-    /*
-    * TODO: ajouter une vérification => si dans modifier wallet, wallet.length = 0 alors redirect to creation wallet
-    *
-    * */
 
     constructor() {
         this.symbolForm = this._fb.group({
@@ -92,7 +87,9 @@ export class UserWallet implements OnInit {
     }
 
     protected modifyAsset(symbol: string, quantity: number) {
-        if (quantity <= 0) return this.removeAsset(symbol);
+        if (quantity <= 0) {
+            return this.removeAsset(symbol);
+        }
         this._walletService.updateAssetQuantityInWallet(this.userId, symbol, quantity).pipe(
             switchMap(() => this._walletFacadeService.loadWallet(this.userId))
         ).subscribe({
@@ -102,10 +99,20 @@ export class UserWallet implements OnInit {
     }
 
     protected removeAsset(symbol: string) {
-        this._walletService.removeAssetFromWallet(this.userId, symbol).pipe(
+                this._walletService.removeAssetFromWallet(this.userId, symbol).pipe(
             switchMap(() => this._walletFacadeService.loadWallet(this.userId))
         ).subscribe({
-            next: assets => this.updateAssets(assets),
+            next: assets => {
+                this.updateAssets(assets)
+                console.log(assets);
+
+                if (assets.length === 0) {
+                    this._walletService.removeWallet(this.userId).subscribe({
+                        next: () => this.router.navigate(['/wallet-creation']),
+                        error: (error) => console.error('Error while removing wallet', error),
+                    });
+                }
+            },
             error: (error) => console.error('Error while removing asset', error),
         });
     }

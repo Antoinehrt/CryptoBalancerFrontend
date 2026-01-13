@@ -38,5 +38,9 @@ export class WalletService {
         return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}?amount=${amount}`, {});
     }
 
+    removeWallet(userId: number): Observable<void>{
+        return this.http.delete<void>(`${this.apiUrl}${userId}`);
+    }
+
 
 }
