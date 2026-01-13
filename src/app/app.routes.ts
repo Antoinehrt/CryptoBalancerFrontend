@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 import {Home} from './pages/home/home';
 import {WalletCreation} from './pages/wallet-creation/wallet-creation';
 import {Test} from './pages/test/test';

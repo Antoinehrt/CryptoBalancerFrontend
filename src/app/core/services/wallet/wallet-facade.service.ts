@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {forkJoin, Observable, of, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AssetModel} from '../../models/asset.model';

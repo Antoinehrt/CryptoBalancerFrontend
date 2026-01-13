@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
-import { CanActivateFn } from '@angular/router';
+import {TestBed} from '@angular/core/testing';
+import {CanActivateFn} from '@angular/router';
 
-import { noWalletGuard } from './no-wallet.guard';
+import {noWalletGuard} from './no-wallet.guard';
 
 describe('noWalletGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) =>

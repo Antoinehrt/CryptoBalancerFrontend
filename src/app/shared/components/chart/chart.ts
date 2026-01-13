@@ -1,9 +1,17 @@
-import {Component, ElementRef, Input, OnChanges, OnDestroy, AfterViewInit, SimpleChanges, ViewChild} from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Input,
+    OnChanges,
+    OnDestroy,
+    SimpleChanges,
+    ViewChild
+} from '@angular/core';
 import {Chart, LinearScale, registerables, TimeScale} from 'chart.js';
 import {CandlestickController, CandlestickElement} from 'chartjs-chart-financial';
 import 'chartjs-adapter-date-fns';
 import {CandleModel} from '../../../core/models/candle.model';
-import {CandleDto} from '../../../core/dto/candle.dto';
 
 Chart.register(
     ...registerables,
