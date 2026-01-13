@@ -8,6 +8,7 @@ import {authGuard} from './core/guard/auth/auth.guard';
 import {UserWallet} from './pages/user-wallet/user-wallet';
 import {hasWalletGuard} from './core/guard/has-wallet/has-wallet.guard';
 import {noWalletGuard} from './core/guard/no-wallet/no-wallet.guard';
+import {Backtest} from './pages/backtest/backtest';
 
 export const routes: Routes = [
     {path: '', component: Home},
@@ -16,6 +17,7 @@ export const routes: Routes = [
     {path: 'profile', component: Profile, canActivate: [authGuard]},
     {path: 'wallet-creation', component: WalletCreation, canActivate: [authGuard, noWalletGuard]},
     {path: 'wallet', component: UserWallet, canActivate: [authGuard, hasWalletGuard]},
+    {path: 'backtest', component: Backtest, canActivate: [authGuard, hasWalletGuard]},
     {path: 'test', component: Test},
     //{path: '404-not-found', component: NotFoundComponent},
     {path: '**', redirectTo: '404-not-found'}
