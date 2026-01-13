@@ -1,23 +1,18 @@
-import {UserService} from '../user/user.service';
-import {WalletService} from './wallet.service';
-import {AssetService} from '../asset/asset.service';
-import {Injectable} from "@angular/core";
+import { Injectable, inject } from '@angular/core';
 import {forkJoin, Observable, of, switchMap} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Asset} from '../../models/asset';
 import {Wallet} from '../../models/wallet';
+import {WalletService} from './wallet.service';
+import {AssetService} from '../asset/asset.service';
 
 @Injectable({ providedIn: 'root' })
 export class WalletFacadeService {
-
-    constructor(
-        private userService: UserService,
-        private walletService: WalletService,
-        private _assetService: AssetService
-    ) {}
+    private _walletService = inject(WalletService)
+    private _assetService = inject(AssetService);
 
     loadWallet(userId: number): Observable<Asset[]> {
-        return this.walletService.getWalletFromUser(userId).pipe(
+        return this._walletService.getWalletFromUser(userId).pipe(
             switchMap(wallet => {
                 if (!wallet.items?.length) {
                     return of([]);

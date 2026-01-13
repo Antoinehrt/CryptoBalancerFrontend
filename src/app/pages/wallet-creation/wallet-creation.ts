@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {MatFormField, MatInputModule, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
@@ -37,22 +37,20 @@ import {Candle} from '../../core/models/candle';
     styleUrl: './wallet-creation.css',
 })
 export class WalletCreation {
+    private _pageTitleService = inject(PageTitleService);
+    private _assetService = inject(AssetService);
+    private _fb = inject(FormBuilder);
+    private _snackBar = inject(MatSnackBar);
+    private _walletService = inject(WalletService);
+    private _userService = inject(UserService);
+    private _walletFacadeService = inject(WalletFacadeService);
+
     assetForm: FormGroup;
-
     wallet!: Wallet;
-
     chartData: Candle[];
-
     symbols?: string[];
 
     constructor(
-        private _pageTitleService: PageTitleService,
-        protected _assetService: AssetService,
-        private _fb: FormBuilder,
-        private _snackBar: MatSnackBar,
-        private _walletService: WalletService,
-        private _userService: UserService,
-        private _walletFacadeService: WalletFacadeService,
     ) {
         this.assetForm = this._fb.group({
             symbol: ['', Validators.required],

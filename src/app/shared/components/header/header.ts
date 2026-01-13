@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject, OnInit} from '@angular/core';
 import {MatToolbar} from '@angular/material/toolbar';
 import {MatFormField, MatLabel} from '@angular/material/form-field';
 import {MatInput} from '@angular/material/input';
@@ -24,12 +24,10 @@ import {Router} from '@angular/router';
     styleUrl: './header.css',
 })
 export class Header implements OnInit {
+    private _pageTitleService = inject(PageTitleService);
+    private router = inject(Router);
 
-    isUserConnected: boolean = false;
     pageTitle$!: Observable<string>;
-
-    constructor(private _pageTitleService: PageTitleService, private router: Router) {
-    }
 
     ngOnInit() {
         this.pageTitle$ = this._pageTitleService.pageTitle$;
