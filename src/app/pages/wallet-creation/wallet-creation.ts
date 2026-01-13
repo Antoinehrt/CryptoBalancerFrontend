@@ -1,17 +1,16 @@
 import {Component} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
-import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatFormField, MatInputModule, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
-import {MatSelect, MatOption} from '@angular/material/select';
-import {MatInputModule} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButtonModule, MatIconButton} from '@angular/material/button';
-import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {AssetService} from '../../core/services/asset/asset.service';
 import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
-import {switchMap, forkJoin, of} from 'rxjs';
+import {forkJoin, of, switchMap} from 'rxjs';
 import {Wallet} from '../../core/models/wallet';
 import {Asset} from '../../core/models/asset';
 import {AssetDto} from '../../core/dto/asset-dto';
@@ -74,7 +73,7 @@ export class WalletCreation {
     addAsset(): void {
         if (this.assetForm.invalid) return;
 
-        const { symbol, quantity } = this.assetForm.value;
+        const {symbol, quantity} = this.assetForm.value;
         const qty = +quantity;
 
         const existing = this.wallet.items.find(a => a.symbol === symbol);
@@ -86,7 +85,7 @@ export class WalletCreation {
         }
 
         this._assetService.getAssetPrice(symbol).subscribe({
-            next: ({ price }) => {
+            next: ({price}) => {
                 this.wallet.items.push({
                     symbol,
                     quantity: qty,
@@ -154,7 +153,7 @@ export class WalletCreation {
     }
 
     private generateChartData(): Candle[] {
-        return Array.from({ length: 12 }, (_, i) => ({
+        return Array.from({length: 12}, (_, i) => ({
             id: i,
             symbol: '',
             open_time: new Date(new Date().getFullYear(), i, 1),

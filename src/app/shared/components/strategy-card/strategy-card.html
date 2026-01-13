@@ -1,45 +1,56 @@
 <div class="card">
-    <div class="header">
-        <img [src]="icon" class="icon label" alt="">
-        <div class="title-block">
-            <div class="title">{{ title }}</div>
-        </div>
-
-
-        <div class="right">
-            <div *ngIf="description" class="description">
-                {{description}}
-            </div>
-
-            <div *ngIf="marketType">
-                <div class="label">Market type</div>
-                <div class="value">{{ marketType }}</div>
-            </div>
-
-            <div *ngIf="twoYear">
-                <div class="label">2 years</div>
-                <div class="value">{{ twoYear }}%</div>
-            </div>
-
-            <div *ngIf="pnl">
-                <div class="label">P&L</div>
-                <div class="value">{{ pnl }}</div>
-            </div>
-
-            <div *ngIf="RiskProfile">
-                <div class="label">Risk Profile</div>
-                <app-risk-profile [value]="riskProfile"></app-risk-profile>
-            </div>
-
-
-            <button mat-raised-button color="primary" *ngIf="showModifyButton" (click)="onModify?.()">
-                Modify
-            </button>
-
-            <button mat-raised-button color="primary" *ngIf="showChooseButton" (click)="onChoose?.()">
-                Choose
-            </button>
-
-        </div>
+  <div class="header">
+    <img [src]="icon" class="icon label" alt="">
+    <div class="title-block">
+      <div class="title">{{ title }}</div>
     </div>
+
+
+    <div class="right">
+      @if (description) {
+        <div class="description">
+          {{ description }}
+        </div>
+      }
+      @if (marketType) {
+        <div>
+          <div class="label">Market type</div>
+          <div class="value">{{ marketType }}</div>
+        </div>
+
+      }
+      @if (twoYear) {
+        <div>
+          <div class="label">2 years</div>
+          <div class="value">{{ twoYear }}%</div>
+        </div>
+      }
+      @if (pnl) {
+        <div>
+          <div class="label">P&L</div>
+          <div class="value">{{ pnl }}</div>
+        </div>
+      }
+      @if (RiskProfile) {
+        <div>
+          <div class="label">Risk Profile</div>
+          <app-risk-profile [value]="riskProfile"></app-risk-profile>
+        </div>
+
+      }
+
+      @if (showModifyButton) {
+        <button mat-raised-button color="primary" (click)="onModify?.()">
+          Modify
+        </button>
+      }
+
+      @if (showChooseButton) {
+        <button mat-raised-button color="primary" (click)="onChoose?.()">
+          Choose
+        </button>
+      }
+
+    </div>
+  </div>
 </div>

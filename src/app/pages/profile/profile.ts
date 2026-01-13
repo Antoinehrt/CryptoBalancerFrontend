@@ -1,16 +1,15 @@
 import {Component, inject} from '@angular/core';
 import {AuthService} from '../../core/services/auth/auth.service';
-import {AsyncPipe, DatePipe, NgIf} from '@angular/common';
+import {AsyncPipe, DatePipe} from '@angular/common';
 
 @Component({
-  selector: 'app-profile',
+    selector: 'app-profile',
     imports: [
-        NgIf,
         AsyncPipe,
         DatePipe
     ],
-  templateUrl: './profile.html',
-  styleUrl: './profile.css',
+    templateUrl: './profile.html',
+    styleUrl: './profile.css',
 })
 export class Profile {
     private authService = inject(AuthService);

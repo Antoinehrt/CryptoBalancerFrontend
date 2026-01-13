@@ -1,17 +1,15 @@
 import {Component, Input} from '@angular/core';
-import {NgIf} from '@angular/common';
 import {RiskProfile} from '../risk-profile/risk-profile';
 import {MatButton} from '@angular/material/button';
 
 @Component({
-  selector: 'app-strategy-card',
+    selector: 'app-strategy-card',
     imports: [
-        NgIf,
         RiskProfile,
         MatButton
     ],
-  templateUrl: './strategy-card.html',
-  styleUrl: './strategy-card.css',
+    templateUrl: './strategy-card.html',
+    styleUrl: './strategy-card.css',
 })
 export class StrategyCard {
 
