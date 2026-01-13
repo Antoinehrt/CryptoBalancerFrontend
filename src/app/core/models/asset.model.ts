@@ -1,4 +1,4 @@
-export interface Asset {
+export interface AssetModel {
   symbol: string;
   quantity: number;
   price: number;

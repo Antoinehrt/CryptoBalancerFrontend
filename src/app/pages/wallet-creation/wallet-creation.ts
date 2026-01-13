@@ -1,23 +1,22 @@
-import {Component} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
-import {MatFormField, MatLabel} from '@angular/material/input';
+import {MatFormField, MatInputModule, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
-import {MatSelect, MatOption} from '@angular/material/select';
-import {MatInputModule} from '@angular/material/input';
+import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButtonModule, MatIconButton} from '@angular/material/button';
-import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {AssetService} from '../../core/services/asset/asset.service';
 import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
-import {switchMap, forkJoin, of} from 'rxjs';
-import {Wallet} from '../../core/models/wallet';
-import {Asset} from '../../core/models/asset';
-import {AssetDto} from '../../core/dto/asset-dto';
+import {forkJoin, of, switchMap} from 'rxjs';
+import {WalletModel} from '../../core/models/wallet.model';
+import {AssetModel} from '../../core/models/asset.model';
+import {AssetDto} from '../../core/dto/asset.dto';
 import {MatIcon} from '@angular/material/icon';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
-import {Candle} from '../../core/models/candle';
+import {CandleModel} from '../../core/models/candle.model';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -38,22 +37,20 @@ import {Candle} from '../../core/models/candle';
     styleUrl: './wallet-creation.css',
 })
 export class WalletCreation {
+    private _pageTitleService = inject(PageTitleService);
+    private _assetService = inject(AssetService);
+    private _fb = inject(FormBuilder);
+    private _snackBar = inject(MatSnackBar);
+    private _walletService = inject(WalletService);
+    private _userService = inject(UserService);
+    private _walletFacadeService = inject(WalletFacadeService);
+
     assetForm: FormGroup;
-
-    wallet!: Wallet;
-
-    chartData: Candle[];
-
+    wallet!: WalletModel;
+    chartData: CandleModel[];
     symbols?: string[];
 
     constructor(
-        private _pageTitleService: PageTitleService,
-        protected _assetService: AssetService,
-        private _fb: FormBuilder,
-        private _snackBar: MatSnackBar,
-        private _walletService: WalletService,
-        private _userService: UserService,
-        private _walletFacadeService: WalletFacadeService,
     ) {
         this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
@@ -67,14 +64,14 @@ export class WalletCreation {
         };
 
         this.chartData = this.generateChartData();
-        this._pageTitleService.setPageTitle('Wallet Creation');
+        this._pageTitleService.setPageTitle('WalletModel Creation');
         this._assetService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
     addAsset(): void {
         if (this.assetForm.invalid) return;
 
-        const { symbol, quantity } = this.assetForm.value;
+        const {symbol, quantity} = this.assetForm.value;
         const qty = +quantity;
 
         const existing = this.wallet.items.find(a => a.symbol === symbol);
@@ -86,7 +83,7 @@ export class WalletCreation {
         }
 
         this._assetService.getAssetPrice(symbol).subscribe({
-            next: ({ price }) => {
+            next: ({price}) => {
                 this.wallet.items.push({
                     symbol,
                     quantity: qty,
@@ -124,7 +121,7 @@ export class WalletCreation {
             )
         ).subscribe({
             next: () => {
-                this.showMessage('Wallet saved successfully');
+                this.showMessage('WalletModel saved successfully');
             },
             error: (err) => {
                 const errorMessage = this.getErrorMessage(err);
@@ -133,11 +130,11 @@ export class WalletCreation {
         });
     }
 
-    trackBySymbol(_: number, asset: Asset): string {
+    trackBySymbol(_: number, asset: AssetModel): string {
         return asset.symbol;
     }
 
-    private toAssetDto(asset: Asset): AssetDto {
+    private toAssetDto(asset: AssetModel): AssetDto {
         return {
             id: 0,
             symbol: asset.symbol,
@@ -153,8 +150,8 @@ export class WalletCreation {
         });
     }
 
-    private generateChartData(): Candle[] {
-        return Array.from({ length: 12 }, (_, i) => ({
+    private generateChartData(): CandleModel[] {
+        return Array.from({length: 12}, (_, i) => ({
             id: i,
             symbol: '',
             open_time: new Date(new Date().getFullYear(), i, 1),

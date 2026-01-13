@@ -1,4 +1,4 @@
-export interface Strategy {
+export interface StrategyModel {
     id: string,
     icon: string,
     title: string,

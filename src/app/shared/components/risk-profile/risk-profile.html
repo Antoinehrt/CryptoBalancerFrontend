@@ -1,7 +1,8 @@
 <div class="risk-profile">
+  @for (circle of circles; track circle) {
     <div
-        *ngFor="let c of circles"
-        class="circle"
-        [class.filled]="c <= value"
+      class="circle"
+      [class.filled]="circle <= value"
     ></div>
+  }
 </div>

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RiskProfile } from './risk-profile';
+import {RiskProfile} from './risk-profile';
 
 describe('RiskProfile', () => {
   let component: RiskProfile;

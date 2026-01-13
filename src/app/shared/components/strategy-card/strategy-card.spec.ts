@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { StrategyCard } from './strategy-card';
+import {StrategyCard} from './strategy-card';
 
 describe('StrategyCard', () => {
   let component: StrategyCard;

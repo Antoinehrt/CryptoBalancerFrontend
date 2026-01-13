@@ -1,13 +1,13 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 import {Home} from './pages/home/home';
 import {WalletCreation} from './pages/wallet-creation/wallet-creation';
 import {Test} from './pages/test/test';
 import {Login} from './pages/login/login';
 import {Profile} from './pages/profile/profile';
-import {authGuard} from './core/guard/auth/auth-guard';
+import {authGuard} from './core/guard/auth/auth.guard';
 import {UserWallet} from './pages/user-wallet/user-wallet';
-import {hasWalletGuard} from './core/guard/has-wallet/has-wallet-guard';
-import {noWalletGuard} from './core/guard/no-wallet/no-wallet-guard';
+import {hasWalletGuard} from './core/guard/has-wallet/has-wallet.guard';
+import {noWalletGuard} from './core/guard/no-wallet/no-wallet.guard';
 
 export const routes: Routes = [
     {path: '', component: Home},
