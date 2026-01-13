@@ -1,7 +1,8 @@
 export interface StrategyModel {
-    id: string,
+    id: number,
     icon: string,
     title: string,
     description: string,
+    marketType: string,
     riskProfile: number
 }

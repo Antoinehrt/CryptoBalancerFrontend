@@ -1,12 +1,11 @@
 <div class="container background">
-
   <div class="form">
     <form [formGroup]="symbolForm">
       <mat-form-field>
         <mat-label>AssetModel</mat-label>
 
         <mat-select formControlName="symbol" required (selectionChange)="onSymbolChange($event)">
-          @for (symbol of symbols; track symbol){
+          @for (symbol of symbols; track symbol) {
             <mat-option [value]="symbol">
               {{ symbol }}
             </mat-option>
@@ -78,8 +77,15 @@
         </table>
       </div>
     }
-  <div class="selected-strat">
-    <p>selected strat</p>
   </div>
+
+  <div class="selected-strat">
+    <app-strategy-card
+      [title]="tmpData.title"
+      [description]="tmpData.description"
+      [marketType]="tmpData.marketType"
+      [riskProfile]="tmpData.riskProfile"
+      [showModifyButton]="true"
+    ></app-strategy-card>
   </div>
 </div>
