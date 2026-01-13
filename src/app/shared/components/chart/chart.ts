@@ -1,8 +1,17 @@
 import {Component, ElementRef, Input, OnChanges, OnDestroy, AfterViewInit, SimpleChanges, ViewChild} from '@angular/core';
-import {Chart, registerables} from 'chart.js';
-import {ChartDataPoint} from '../../../core/models/chart-data-point';
+import {Chart, LinearScale, registerables, TimeScale} from 'chart.js';
+import {CandlestickController, CandlestickElement} from 'chartjs-chart-financial';
+import 'chartjs-adapter-date-fns';
+import {Candle} from '../../../core/models/candle';
+import {CandleDto} from '../../../core/dto/candle-dto';
 
-Chart.register(...registerables);
+Chart.register(
+    ...registerables,
+    TimeScale,
+    LinearScale,
+    CandlestickController,
+    CandlestickElement
+    );
 
 @Component({
     selector: 'app-chart',
@@ -12,10 +21,10 @@ Chart.register(...registerables);
 })
 export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     @Input()
-    datas: ChartDataPoint[] = [];
+    datas: Candle[] = [];
 
     @Input()
-    cryptoSymbol: string = 'Crypto';
+    cryptoSymbol: string = '';
 
     @ViewChild('chartCanvas', {static: false})
     chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -41,24 +50,26 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     private renderChart() {
         if (!this.chartCanvas?.nativeElement || !this.datas?.length) return;
 
-        const sortedData = [...this.datas].sort((a, b) => a.time.getTime() - b.time.getTime());
+        const sortedData = [...this.datas].sort((a, b) =>
+            new Date(a.open_time).getTime() - new Date(b.open_time).getTime()
+        );
 
         if (this.chart) {
             this.chart.destroy();
         }
 
         const config: any = {
-            type: 'line',
+            type: 'candlestick',
             data: {
-                labels: sortedData.map(d => this.formatDate(d.time)),
                 datasets: [{
-                    label: `Holdings (${this.cryptoSymbol})`,
-                    data: sortedData.map(d => d.amount),
-                    fill: false,
-                    borderColor: 'rgb(59,130,246)',
-                    tension: 0.4,
-                    pointRadius: 0,
-                    pointHoverRadius: 0,
+                    label: `${this.cryptoSymbol}`,
+                    data: sortedData.map(d => ({
+                        x: new Date(d.open_time).getTime(),
+                        o: d.open,
+                        h: d.high,
+                        l: d.low,
+                        c: d.close
+                    }))
                 }]
             },
             options: {
@@ -72,7 +83,13 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
                         enabled: true,
                         callbacks: {
                             label: (context: any) => {
-                                return `${context.dataset.label}: ${context.parsed.y?.toFixed(2) || 0} ${this.cryptoSymbol}`;
+                                const data = context.raw;
+                                return [
+                                    `Open: ${data.o?.toFixed(2)}`,
+                                    `High: ${data.h?.toFixed(2)}`,
+                                    `Low: ${data.l?.toFixed(2)}`,
+                                    `Close: ${data.c?.toFixed(2)}`
+                                ];
                             }
                         }
                     }
@@ -90,11 +107,19 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
                         ticks: {
                             color: 'white',
                             callback: (value: any) => {
-                                return `${value} ${this.cryptoSymbol}`;
+                                return `$${value}`;
                             }
                         }
                     },
                     x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MMM dd',
+                                month: 'MMM yyyy'
+                            }
+                        },
                         border: {
                             display: true,
                             color: 'white'
@@ -116,9 +141,5 @@ export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
         if (ctx) {
             this.chart = new Chart(ctx, config);
         }
-    }
-
-    private formatDate(date: Date): string {
-        return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
     }
 }

@@ -1,7 +1,7 @@
-import {CryptoDto} from './crypto-dto';
+import {AssetDto} from './asset-dto';
 
 export interface WalletDto {
-    id: number;
+    id: number | null;
     userId: number;
-    crypto: CryptoDto[];
+    items: AssetDto[];
 }

@@ -2,19 +2,22 @@ import {Component} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
-import {ChartDataPoint} from '../../core/models/chart-data-point';
 import {MatSelect, MatOption} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
+import {MatButtonModule, MatIconButton} from '@angular/material/button';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {WalletDto} from '../../core/dto/wallet-dto';
-import {CryptoDto} from '../../core/dto/crypto-dto';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
-import {CryptoService} from '../../core/services/crypto/crypto.service';
+import {AssetService} from '../../core/services/asset/asset.service';
 import {WalletService} from '../../core/services/wallet/wallet.service';
 import {UserService} from '../../core/services/user/user.service';
 import {switchMap, forkJoin, of} from 'rxjs';
+import {Wallet} from '../../core/models/wallet';
+import {Asset} from '../../core/models/asset';
+import {AssetDto} from '../../core/dto/asset-dto';
+import {MatIcon} from '@angular/material/icon';
+import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
+import {Candle} from '../../core/models/candle';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -28,6 +31,8 @@ import {switchMap, forkJoin, of} from 'rxjs';
         MatButtonModule,
         ChartComponent,
         ReactiveFormsModule,
+        MatIconButton,
+        MatIcon
     ],
     templateUrl: './wallet-creation.html',
     styleUrl: './wallet-creation.css',
@@ -35,21 +40,20 @@ import {switchMap, forkJoin, of} from 'rxjs';
 export class WalletCreation {
     assetForm: FormGroup;
 
-    wallet!: WalletDto;
+    wallet!: Wallet;
 
-    private percentages: Record<string, number> = {};
-
-    chartData: ChartDataPoint[];
+    chartData: Candle[];
 
     symbols?: string[];
 
     constructor(
         private _pageTitleService: PageTitleService,
-        private _cryptoService: CryptoService,
+        protected _assetService: AssetService,
         private _fb: FormBuilder,
         private _snackBar: MatSnackBar,
         private _walletService: WalletService,
         private _userService: UserService,
+        private _walletFacadeService: WalletFacadeService,
     ) {
         this.assetForm = this._fb.group({
             symbol: ['', Validators.required],
@@ -59,82 +63,46 @@ export class WalletCreation {
         this.wallet = {
             id: 0,
             userId: 0,
-            crypto: []
+            items: []
         };
 
         this.chartData = this.generateChartData();
         this._pageTitleService.setPageTitle('Wallet Creation');
-        this._cryptoService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
+        this._assetService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
     addAsset(): void {
-        if (!this.assetForm.valid) {
-            this.showMessage('Please complete every field', true);
-            return;
-        }
+        if (this.assetForm.invalid) return;
 
-        const {symbol, quantity} = this.assetForm.value;
-        if (!symbol) return;
+        const { symbol, quantity } = this.assetForm.value;
+        const qty = +quantity;
 
-        const qty = parseFloat(quantity);
-        const existing = this.wallet.crypto.find(c => c.symbol === symbol);
-
+        const existing = this.wallet.items.find(a => a.symbol === symbol);
         if (existing) {
-            existing.quantity = (existing.quantity || 0) + qty;
-            this.showMessage(`Quantity updated for ${symbol}`);
-            this.calculatePercentages();
+            existing.quantity += qty;
+            this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
             this.assetForm.reset();
             return;
         }
 
-        this._cryptoService.getCryptoPrice(symbol).subscribe({
-            next: (price) => {
-                const newCrypto: CryptoDto = {
-                    id: 0,
+        this._assetService.getAssetPrice(symbol).subscribe({
+            next: ({ price }) => {
+                this.wallet.items.push({
                     symbol,
-                    price: price.price,
-                    quantity: qty
-                };
-                this.wallet.crypto.push(newCrypto);
-                this.showMessage(`${symbol} added to your wallet`);
-                this.calculatePercentages();
+                    quantity: qty,
+                    price,
+                    percentage: 0
+                });
+
+                this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
                 this.assetForm.reset();
-            },
-            error: () => {
-                this.showMessage(`Unable to retrieve price for${symbol}`, true);
             }
         });
     }
 
-    removeCrypto(symbol: string): void {
-        this.wallet.crypto = this.wallet.crypto.filter(c => c.symbol !== symbol);
-        delete this.percentages[symbol];
-        this.calculatePercentages();
-        this.showMessage('Asset removed from the wallet');
-    }
-
-    private calculatePercentages(): void {
-        const totalValue = this.wallet.crypto.reduce((sum, c) => sum + (c.quantity || 0) * (c.price ?? 0), 0);
-
-        this.wallet.crypto.forEach(c => {
-            const value = (c.quantity || 0) * (c.price ?? 0);
-            this.percentages[c.symbol] = totalValue > 0 ? Math.round((value / totalValue) * 10000) / 100 : 0;
-        });
-    }
-    getQuantity(symbol: string): number {
-        const crypto = this.wallet.crypto.find(c => c.symbol === symbol);
-        return crypto?.quantity || 0;
-    }
-
-    getPercentage(symbol: string): number {
-        return this.percentages[symbol] || 0;
-    }
-
-    private showMessage(message: string, isError = false): void {
-        this._snackBar.open(message, 'Close', {
-            duration: 3000,
-            panelClass: isError ? 'error-snackbar' : 'success-snackbar'
-        });
+    removeAsset(symbol: string): void {
+        this.wallet.items = this.wallet.items.filter(a => a.symbol !== symbol);
+        this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
     }
 
     saveWallet(): void {
@@ -142,14 +110,15 @@ export class WalletCreation {
             switchMap(user =>
                 this._walletService.createWallet(user.id).pipe(
                     switchMap(() => {
-                        if (this.wallet.crypto.length === 0) {
+                        if (this.wallet.items.length === 0) {
                             return of(null);
                         }
 
-                        const addCryptoRequests = this.wallet.crypto.map(crypto =>
-                            this._walletService.addCryptoToWalletFromUser(user.id, crypto)
+                        const addAssetRequests = this.wallet.items.map(asset =>
+                            this._walletService.addAssetToWalletFromUser(user.id, this.toAssetDto(asset))
                         );
-                        return forkJoin(addCryptoRequests);
+
+                        return forkJoin(addAssetRequests);
                     })
                 )
             )
@@ -164,10 +133,35 @@ export class WalletCreation {
         });
     }
 
-    private generateChartData(): ChartDataPoint[] {
+    trackBySymbol(_: number, asset: Asset): string {
+        return asset.symbol;
+    }
+
+    private toAssetDto(asset: Asset): AssetDto {
+        return {
+            id: 0,
+            symbol: asset.symbol,
+            amount: asset.quantity,
+        };
+    }
+
+
+    private showMessage(message: string, isError = false): void {
+        this._snackBar.open(message, 'Close', {
+            duration: 3000,
+            panelClass: isError ? 'error-snackbar' : 'success-snackbar'
+        });
+    }
+
+    private generateChartData(): Candle[] {
         return Array.from({ length: 12 }, (_, i) => ({
-            amount: 0,
-            time: new Date(new Date().getFullYear(), i, 1)
+            id: i,
+            symbol: '',
+            open_time: new Date(new Date().getFullYear(), i, 1),
+            open: 0,
+            close: 0,
+            high: 0,
+            low: 0
         }));
     }
 
@@ -179,4 +173,5 @@ export class WalletCreation {
         if (error.status === 500) return 'Server error. Please try again later.';
         return 'Error saving wallet. Please try again.';
     }
+
 }

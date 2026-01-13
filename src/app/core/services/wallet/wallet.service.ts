@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import {WalletDto} from '../../dto/wallet-dto';
 import {Observable} from 'rxjs';
-import {CryptoDto} from '../../dto/crypto-dto';
+import {AssetDto} from '../../dto/asset-dto';
 
 @Injectable({
     providedIn: 'root',
@@ -20,14 +20,27 @@ export class WalletService {
         return this.http.get<WalletDto>(`${this.apiUrl}getWalletByUserId/${userId}`);
     }
 
-    addCryptoToWalletFromUser(userId: number, crypto: CryptoDto): Observable<WalletDto>{
-        const symbol = crypto.symbol;
-        const amount = crypto.quantity || 0;
+    addAssetToWalletFromUser(userId: number, assetDto: AssetDto): Observable<WalletDto>{
+        const symbol = assetDto.symbol;
+        const amount = assetDto.amount || 0;
         return this.http.post<WalletDto>(`${this.apiUrl}${userId}/addItemToWalletByUserID?symbol=${symbol}&amount=${amount}`, {});
     }
 
     walletExists(userId: number): Observable<boolean>{
         return this.http.get<boolean>(`${this.apiUrl}exists/${userId}`);
     }
+
+    removeAssetFromWallet(userId: number, symbol: string): Observable<WalletDto>{
+        return this.http.delete<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}`);
+    }
+
+    updateAssetQuantityInWallet(userId: number, symbol: string, amount: number): Observable<WalletDto>{
+        return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}?amount=${amount}`, {});
+    }
+
+    removeWallet(userId: number): Observable<void>{
+        return this.http.delete<void>(`${this.apiUrl}${userId}`);
+    }
+
 
 }

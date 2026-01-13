@@ -1,0 +1,85 @@
+<div class="container background">
+
+  <div class="form">
+    <form [formGroup]="symbolForm">
+      <mat-form-field>
+        <mat-label>Asset</mat-label>
+
+        <mat-select formControlName="symbol" required (selectionChange)="onSymbolChange($event)">
+          @for (symbol of symbols; track symbol){
+            <mat-option [value]="symbol">
+              {{ symbol }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+  </div>
+
+  <div class="chart">
+    <app-chart [datas]="candles" [cryptoSymbol]="this.displayedSymbol"></app-chart>
+  </div>
+
+  <div class="table">
+    @if (isLoading()) {
+      <p>Loading...</p>
+    } @else {
+      <div class="tableContainer">
+        <table class="assets-table">
+          <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Percentage</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (asset of assets(); track asset.symbol) {
+              <tr>
+                <td>{{ asset.symbol }}</td>
+                @if (isEditing(asset.symbol)) {
+                  <td><input type="number" [(ngModel)]="editingValues()!.quantity" step="0.00000001" min="0"></td>
+                } @else {
+                  <td>{{ asset.quantity | number:'1.2-8' }}</td>
+                }
+                <td>{{ asset.price * asset.quantity | currency:'EUR' }}</td>
+                <td>{{ asset.percentage }}%</td>
+                @if (isEditing(asset.symbol)) {
+                  <td>
+                    <button mat-icon-button class="btn primary" (click)="saveEdit(asset.symbol)" title="Save">
+                      <mat-icon>save</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn secondary" (click)="cancelEdit()" title="Cancel">
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </td>
+                } @else {
+                  <td>
+                    <button mat-icon-button class="btn primary" (click)="startEdit(asset)"
+                            title="Modify asset">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button class="btn secondary" (click)="removeAsset(asset.symbol)"
+                            title="Remove asset">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                }
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">There are no assets</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  <div class="selected-strat">
+    <p>selected strat</p>
+  </div>
+  </div>
+</div>

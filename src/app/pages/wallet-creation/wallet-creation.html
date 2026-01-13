@@ -2,7 +2,7 @@
     <div class="elements">
         <form [formGroup]="assetForm" (ngSubmit)="addAsset()">
             <mat-form-field>
-                <mat-label>CryptoDto Asset</mat-label>
+                <mat-label>Asset</mat-label>
                 <mat-select formControlName="symbol" required>
                     <mat-option *ngFor="let symbol of symbols" [value]="symbol">
                         {{ symbol }}
@@ -20,16 +20,18 @@
             </button>
         </form>
     </div>
+
     <div class="elements">
         <app-chart
             [datas]="chartData"
             [cryptoSymbol]="''">
         </app-chart>
     </div>
+
     <div class="elements">
         <h3>Assets</h3>
 
-        <table class="assets-table" *ngIf="wallet.crypto.length > 0; else noAssets">
+        <table class="assets-table" *ngIf="wallet.items.length > 0; else noAssets">
             <thead>
             <tr>
                 <th>Asset</th>
@@ -39,20 +41,19 @@
                 <th>Actions</th>
             </tr>
             </thead>
+
             <tbody>
-            <tr *ngFor="let crypto of wallet.crypto">
+            <tr *ngFor="let asset of wallet.items; trackBy: trackBySymbol">
+                <td><strong>{{ asset.symbol }}</strong></td>
+                <td>{{ asset.quantity | number:'1.2-8' }}</td>
+                <td>{{ asset.price * asset.quantity | currency:'EUR':'symbol' }}</td>
                 <td>
-                    <strong>{{ crypto.symbol }}</strong>
+                        <span class="percentage">
+                            {{ asset.percentage }}%
+                        </span>
                 </td>
-                <td>{{ getQuantity(crypto.symbol) | number:'1.2-8' }}</td>
-                <td>{{ crypto.price | currency:'USD':'symbol' }}</td>
                 <td>
-                    <span class="percentage">{{ getPercentage(crypto.symbol) }}%</span>
-                </td>
-                <td>
-                    <button mat-icon-button color="warn" (click)="removeCrypto(crypto.symbol)" title="Remove asset">
-                        ❌
-                    </button>
+                    <button mat-icon-button class="btn secondary" (click)="removeAsset(asset.symbol)" title="Remove asset"><mat-icon>delete</mat-icon></button>
                 </td>
             </tr>
             </tbody>
@@ -69,8 +70,8 @@
         <button
             mat-raised-button
             color="accent"
-            [disabled]="wallet.crypto.length === 0"
             class="backtest-button"
+            [disabled]="wallet.items.length === 0"
             (click)="saveWallet()"
         >
             <span>🚀 Run Backtest</span>

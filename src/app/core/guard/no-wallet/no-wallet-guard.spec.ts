@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { CanActivateFn } from '@angular/router';
 
-import { walletExistsGuard } from './wallet-exists-guard';
+import { noWalletGuard } from './no-wallet-guard';
 
-describe('walletExistsGuard', () => {
+describe('noWalletGuard', () => {
   const executeGuard: CanActivateFn = (...guardParameters) => 
-      TestBed.runInInjectionContext(() => walletExistsGuard(...guardParameters));
+      TestBed.runInInjectionContext(() => noWalletGuard(...guardParameters));
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
