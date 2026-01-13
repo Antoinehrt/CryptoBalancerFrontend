@@ -3,7 +3,7 @@ import {Chart, LinearScale, registerables, TimeScale} from 'chart.js';
 import {CandlestickController, CandlestickElement} from 'chartjs-chart-financial';
 import 'chartjs-adapter-date-fns';
 import {Candle} from '../../../core/models/candle';
-import {CandleDto} from '../../../core/dto/candle-dto';
+import {CandleDto} from '../../../core/dto/candle.dto';
 
 Chart.register(
     ...registerables,

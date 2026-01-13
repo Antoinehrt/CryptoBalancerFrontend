@@ -13,7 +13,7 @@ import {UserService} from '../../core/services/user/user.service';
 import {forkJoin, of, switchMap} from 'rxjs';
 import {Wallet} from '../../core/models/wallet';
 import {Asset} from '../../core/models/asset';
-import {AssetDto} from '../../core/dto/asset-dto';
+import {AssetDto} from '../../core/dto/asset.dto';
 import {MatIcon} from '@angular/material/icon';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
 import {Candle} from '../../core/models/candle';

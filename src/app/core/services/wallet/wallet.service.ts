@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
-import {WalletDto} from '../../dto/wallet-dto';
+import {WalletDto} from '../../dto/wallet.dto';
 import {Observable} from 'rxjs';
-import {AssetDto} from '../../dto/asset-dto';
+import {AssetDto} from '../../dto/asset.dto';
 
 @Injectable({
     providedIn: 'root',

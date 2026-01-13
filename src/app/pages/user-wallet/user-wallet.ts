@@ -10,7 +10,7 @@ import {UserService} from '../../core/services/user/user.service';
 import {switchMap} from 'rxjs';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {CandleService} from '../../core/services/candle/candle.service';
-import {CandleDto} from '../../core/dto/candle-dto';
+import {CandleDto} from '../../core/dto/candle.dto';
 import {ChartComponent} from '../../shared/components/chart/chart';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
