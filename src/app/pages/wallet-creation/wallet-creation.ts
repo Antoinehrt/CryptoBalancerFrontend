@@ -123,7 +123,7 @@ export class WalletCreation {
             )
         ).subscribe({
             next: () => {
-                this.showMessage('WalletModel saved successfully');
+                this.showMessage('Wallet saved successfully');
                 this.router.navigate(['/backtest']);
             },
             error: (err) => {
