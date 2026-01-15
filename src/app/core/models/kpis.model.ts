@@ -3,5 +3,5 @@ export interface KpisModel{
     returnPercent: number;
     totalCost: number;
     maxDrawdown: number;
-    riskScore: number;
+    riskProfile: number;
 }

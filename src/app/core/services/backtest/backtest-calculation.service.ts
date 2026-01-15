@@ -3,7 +3,7 @@ import {BacktestService} from './backtest.service';
 import {BacktestResultDto} from '../../dto/backtest-result.dto';
 import {KpisModel} from '../../models/kpis.model';
 import {AvailableStrategiesEnum} from '../../enums/available-strategies.enum';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Injectable({
@@ -13,7 +13,7 @@ export class BacktestCalculationService {
 
     private _backtestService = inject(BacktestService);
 
-    public calculateKPIs (userId: number){
+    public calculateKPIs (userId: number): Observable<KpisModel[]>{
         const strategies = Object.values(AvailableStrategiesEnum);
 
         return forkJoin(
@@ -36,14 +36,14 @@ export class BacktestCalculationService {
                             if (drawDown > maxDrawDown) maxDrawDown = drawDown;
                         }
 
-                        const riskScore = Math.min(5, Math.ceil(maxDrawDown / 10));
+                        const riskProfile = Math.min(5, Math.ceil(maxDrawDown / 10));
 
                         return {
                             strategyName: strategy,
                             returnPercent,
                             totalCost,
                             maxDrawdown: maxDrawDown,
-                            riskScore
+                            riskProfile
                         } as KpisModel;
                     })
                 )
