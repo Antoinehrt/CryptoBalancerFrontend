@@ -1,1 +1,22 @@
-<p>glossary works!</p>
+<mat-form-field class="search-field">
+  <mat-label>
+    <mat-icon>search</mat-icon>
+    Search
+  </mat-label>
+
+  <input
+    type="text"
+    (input)="search.set($any($event.target).value)"
+  >
+</mat-form-field>
+
+
+<div class="terms">
+  @for (term of filteredTerms(); track term.key) {
+    <div class="term-card">
+      <h3>{{ term.label }}</h3>
+      <p>{{ term.shortDef }}</p>
+
+    </div>
+  }
+</div>
