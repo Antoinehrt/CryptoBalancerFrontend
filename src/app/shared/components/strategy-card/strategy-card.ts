@@ -1,12 +1,15 @@
 import {Component, Input} from '@angular/core';
 import {RiskProfile} from '../risk-profile/risk-profile';
 import {MatButton} from '@angular/material/button';
+import {CurrencyPipe, DecimalPipe} from '@angular/common';
 
 @Component({
     selector: 'app-strategy-card',
     imports: [
         RiskProfile,
-        MatButton
+        MatButton,
+        CurrencyPipe,
+        DecimalPipe
     ],
     templateUrl: './strategy-card.html',
     styleUrl: './strategy-card.css',
@@ -22,9 +25,11 @@ export class StrategyCard {
     @Input()
     marketType?: string;
     @Input()
-    twoYear?: number;
+    maxDrawdown?: number;
     @Input()
-    pnl?: number;
+    returnPercent?: number;
+    @Input()
+    totalCost?: number;
     @Input()
     riskProfile!: number;
 

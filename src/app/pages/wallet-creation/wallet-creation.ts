@@ -17,6 +17,7 @@ import {AssetDto} from '../../core/dto/asset.dto';
 import {MatIcon} from '@angular/material/icon';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
 import {CandleModel} from '../../core/models/candle.model';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-wallet-creation',
@@ -44,6 +45,7 @@ export class WalletCreation {
     private _walletService = inject(WalletService);
     private _userService = inject(UserService);
     private _walletFacadeService = inject(WalletFacadeService);
+    private router = inject(Router);
 
     assetForm: FormGroup;
     wallet!: WalletModel;
@@ -121,7 +123,8 @@ export class WalletCreation {
             )
         ).subscribe({
             next: () => {
-                this.showMessage('WalletModel saved successfully');
+                this.showMessage('Wallet saved successfully');
+                this.router.navigate(['/backtest']);
             },
             error: (err) => {
                 const errorMessage = this.getErrorMessage(err);
