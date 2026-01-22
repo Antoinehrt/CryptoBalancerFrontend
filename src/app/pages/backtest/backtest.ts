@@ -4,6 +4,7 @@ import {BacktestCalculationService} from '../../core/services/backtest/backtest-
 import {StrategyCard} from '../../shared/components/strategy-card/strategy-card';
 import {KpisModel} from '../../core/models/kpis.model';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
+import {switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-backtest',
@@ -21,15 +22,19 @@ export class Backtest implements OnInit {
 
     protected isLoading = signal(true);
     protected kpis: KpisModel[] = [];
+    private userId: number = -1;
 
-    //TODO : id user dynamic
-
-    ngOnInit(): void {
+      ngOnInit(): void {
         this._pageTitleService.setPageTitle("Backtest");
-        this._backtestCalculationService.calculateKPIs(1).subscribe({
+        this._userService.getCurrentUser().pipe(
+            switchMap(user => {
+                this.userId = user.id;
+                return this._backtestCalculationService.calculateKPIs(user.id);
+            })
+        ).subscribe({
             next: response => {
                 this.kpis = response;
-                console.log(this.kpis.at(1)?.totalCost);
+                console.log(this.kpis.at(this.userId)?.totalCost);
                 this.isLoading.set(false);
             }
         });
