@@ -1,8 +1,13 @@
 <div class="container background">
   @for (strategy of strategies; track strategy) {
     <app-strategy-card
-
-    >
+      [icon]="strategy.icon"
+      [title]="strategy.title"
+      [description]="strategy.description"
+      [marketType]="strategy.marketType"
+      [riskProfile]="strategy.riskProfile"
+      [showChooseButton]="true"
+      >
     </app-strategy-card>
   }
 </div>
