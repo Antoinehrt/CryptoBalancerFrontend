@@ -1,14 +1,15 @@
 import {Component, Input} from '@angular/core';
 import {RiskProfile} from '../risk-profile/risk-profile';
 import {MatButton} from '@angular/material/button';
-import {CurrencyPipe} from '@angular/common';
+import {CurrencyPipe, DecimalPipe} from '@angular/common';
 
 @Component({
     selector: 'app-strategy-card',
     imports: [
         RiskProfile,
         MatButton,
-        CurrencyPipe
+        CurrencyPipe,
+        DecimalPipe
     ],
     templateUrl: './strategy-card.html',
     styleUrl: './strategy-card.css',

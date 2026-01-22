@@ -24,9 +24,17 @@
     align-items: flex-start;
 }
 
-.icon.label {
+.icon .label {
     margin-bottom: 5px;
 }
+
+.icon {
+  max-height: 30px;
+  width: auto;
+  object-fit: contain;
+  margin: 10px;
+}
+
 
 .title {
     font-weight: bold;

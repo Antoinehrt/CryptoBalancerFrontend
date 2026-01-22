@@ -1,6 +1,6 @@
 <div class="card">
   <div class="header">
-    <img [src]="icon" class="icon label" alt="">
+    <img [src]="icon" alt="Icon" class="icon label">
     <div class="title-block">
       <div class="title">{{ title }}</div>
     </div>
@@ -24,21 +24,24 @@
       @if (maxDrawdown) {
         <div>
           <div class="label">Max Drawdown</div>
-          <div class="value">{{ maxDrawdown }}%</div>
+          <div class="value">{{ maxDrawdown | number: '2.1-5' : 'fr-BE' }}%</div>
         </div>
       }
 
       @if (returnPercent) {
         <div>
           <div class="label">Return Percent</div>
-          <div class="value">{{ returnPercent }}%</div>
+          <div class="value">{{ returnPercent | number: '2.1-5' : 'fr-BE' }}%</div>
         </div>
       }
 
       @if (totalCost) {
-        <div class="label">Total Cost</div>
-        <div class="value">{{ returnPercent | currency:'EUR' }}</div>
+        <div>
+          <div class="label">Total Cost</div>
+          <div class="value">{{ returnPercent | currency:'EUR' }}</div>
+        </div>
       }
+
       @if (RiskProfile) {
         <div>
           <div class="label">Risk Profile</div>
