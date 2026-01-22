@@ -1,1 +1,19 @@
-<p>backtest works!</p>
+<div class="container background">
+  @if (isLoading()) {
+    <p>Loading...</p>
+  } @else {
+    @for (kpi of kpis; track kpi) {
+      <app-strategy-card
+        [icon]="'assets/img/icon/strategy/contant_mix.png'"
+        [title]="kpi.strategyName"
+        [returnPercent]="kpi.returnPercent"
+        [totalCost]="kpi.totalCost"
+        [maxDrawdown]="kpi.maxDrawdown"
+        [riskProfile]="kpi.riskProfile"
+        [showModifyButton]="true"
+      >
+      </app-strategy-card>
+    }
+  }
+
+</div>
