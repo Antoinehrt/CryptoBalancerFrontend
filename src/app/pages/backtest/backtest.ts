@@ -29,12 +29,12 @@ export class Backtest implements OnInit {
         this._userService.getCurrentUser().pipe(
             switchMap(user => {
                 this.userId = user.id;
+
                 return this._backtestCalculationService.calculateKPIs(user.id);
             })
         ).subscribe({
             next: response => {
                 this.kpis = response;
-                console.log(this.kpis.at(this.userId)?.totalCost);
                 this.isLoading.set(false);
             }
         });

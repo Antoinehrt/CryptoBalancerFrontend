@@ -19,6 +19,8 @@
     <app-chart [datas]="candles" [cryptoSymbol]="this.displayedSymbol"></app-chart>
   </div>
 
+  <app-add-asset-form (formSubmit)="addAssetToWallet($event)"></app-add-asset-form>
+
   <div class="table">
     @if (isLoading()) {
       <p>Loading...</p>
