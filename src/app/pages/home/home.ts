@@ -20,4 +20,8 @@ export class Home {
     navigateToWalletCreation() {
         this.router.navigate(['/wallet-creation']);
     }
+
+    protected navigateToStrategies() {
+        this.router.navigate(['/strategies'])
+    }
 }
