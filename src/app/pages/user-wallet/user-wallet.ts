@@ -18,6 +18,8 @@ import {CandleModel} from '../../core/models/candle.model';
 import {Router} from '@angular/router';
 import {StrategyCard} from '../../shared/components/strategy-card/strategy-card';
 import {StrategyModel} from '../../core/models/strategy.model';
+import {AddAssetForm} from '../../shared/components/add-asset-form/add-asset-form';
+import {AssetDto} from '../../core/dto/asset.dto';
 
 @Component({
     selector: 'app-user-wallet',
@@ -35,7 +37,8 @@ import {StrategyModel} from '../../core/models/strategy.model';
         MatOption,
         MatSelect,
         ReactiveFormsModule,
-        StrategyCard
+        StrategyCard,
+        AddAssetForm
     ],
     templateUrl: './user-wallet.html',
     styleUrl: './user-wallet.css',
@@ -99,19 +102,20 @@ export class UserWallet implements OnInit {
     }
 
     protected modifyAsset(symbol: string, quantity: number) {
+        //TODO : use assetModel in params?
         if (quantity <= 0) {
             return this.removeAsset(symbol);
         }
         this._walletService.updateAssetQuantityInWallet(this.userId, symbol, quantity).pipe(
             switchMap(() => this._walletFacadeService.loadWallet(this.userId))
         ).subscribe({
-           next: assets => this.updateAssets(assets),
+            next: assets => this.updateAssets(assets),
             error: (error) => console.error('Error while updating quantity', error),
         });
     }
 
     protected removeAsset(symbol: string) {
-                this._walletService.removeAssetFromWallet(this.userId, symbol).pipe(
+        this._walletService.removeAssetFromWallet(this.userId, symbol).pipe(
             switchMap(() => this._walletFacadeService.loadWallet(this.userId))
         ).subscribe({
             next: assets => {
@@ -129,7 +133,7 @@ export class UserWallet implements OnInit {
         });
     }
 
-    private updateAssets(assets: AssetModel[]){
+    private updateAssets(assets: AssetModel[]) {
         this.assets.set(assets);
         this.isLoading.set(false);
     }
@@ -159,14 +163,27 @@ export class UserWallet implements OnInit {
         this._candleService.getCandlesBySymbol(this.displayedSymbol).subscribe(
             (candlesDto: CandleDto[]) => {
                 this.candles = candlesDto.map(dto => {
-                    const c: any = { ...dto };
+                    const c: any = {...dto};
                     if ((dto as any).timestamp !== undefined && (typeof (dto as any).timestamp === 'string' || typeof (dto as any).timestamp === 'number')) {
                         c.timestamp = new Date((dto as any).timestamp);
                     }
                     return c as CandleModel;
                 });
-                console.log(this.candles);
             }
         )
+    }
+
+    protected addAssetToWallet($event: AssetDto) {
+        console.log($event.amount);
+        if (this.symbols.some(s => s === $event.symbol)) this.modifyAsset($event.symbol, $event.amount);
+        else {
+            this._walletService.addAssetToWalletFromUser(this.userId, $event).pipe(
+                switchMap(() => this._walletFacadeService.loadWallet(this.userId))
+            ).subscribe({
+                next: assets => this.updateAssets(assets),
+                error: (error) => console.error('Error while updating quantity', error),
+            });
+        }
+
     }
 }

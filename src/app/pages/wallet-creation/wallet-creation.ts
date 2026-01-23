@@ -1,10 +1,9 @@
 import {Component, inject} from '@angular/core';
 import {PageTitleService} from '../../core/services/page-title/page-title.service';
-import {MatFormField, MatInputModule, MatLabel} from '@angular/material/input';
+import {MatInputModule} from '@angular/material/input';
 import {ChartComponent} from '../../shared/components/chart/chart';
-import {MatOption, MatSelect} from '@angular/material/select';
 import {MatButtonModule, MatIconButton} from '@angular/material/button';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import {CommonModule} from '@angular/common';
 import {AssetService} from '../../core/services/asset/asset.service';
@@ -18,21 +17,19 @@ import {MatIcon} from '@angular/material/icon';
 import {WalletFacadeService} from '../../core/services/wallet/wallet-facade.service';
 import {CandleModel} from '../../core/models/candle.model';
 import {Router} from '@angular/router';
+import {AddAssetForm} from '../../shared/components/add-asset-form/add-asset-form';
 
 @Component({
     selector: 'app-wallet-creation',
     imports: [
         CommonModule,
-        MatFormField,
-        MatLabel,
-        MatSelect,
-        MatOption,
         MatInputModule,
         MatButtonModule,
         ChartComponent,
         ReactiveFormsModule,
         MatIconButton,
-        MatIcon
+        MatIcon,
+        AddAssetForm
     ],
     templateUrl: './wallet-creation.html',
     styleUrl: './wallet-creation.css',
@@ -40,24 +37,16 @@ import {Router} from '@angular/router';
 export class WalletCreation {
     private _pageTitleService = inject(PageTitleService);
     private _assetService = inject(AssetService);
-    private _fb = inject(FormBuilder);
     private _snackBar = inject(MatSnackBar);
     private _walletService = inject(WalletService);
     private _userService = inject(UserService);
     private _walletFacadeService = inject(WalletFacadeService);
     private router = inject(Router);
 
-    assetForm: FormGroup;
     wallet!: WalletModel;
     chartData: CandleModel[];
-    symbols?: string[];
 
-    constructor(
-    ) {
-        this.assetForm = this._fb.group({
-            symbol: ['', Validators.required],
-            quantity: ['', [Validators.required, Validators.min(0.00001)]]
-        });
+    constructor() {
 
         this.wallet = {
             id: 0,
@@ -67,34 +56,26 @@ export class WalletCreation {
 
         this.chartData = this.generateChartData();
         this._pageTitleService.setPageTitle('WalletModel Creation');
-        this._assetService.getAllSymbols().subscribe(symbols => this.symbols = symbols);
     }
 
-    addAsset(): void {
-        if (this.assetForm.invalid) return;
-
-        const {symbol, quantity} = this.assetForm.value;
-        const qty = +quantity;
-
-        const existing = this.wallet.items.find(a => a.symbol === symbol);
+    addAsset($event: AssetDto): void {
+        const existing = this.wallet.items.find(a => a.symbol === $event.symbol);
         if (existing) {
-            existing.quantity += qty;
+            existing.quantity += $event.amount;
             this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
-            this.assetForm.reset();
             return;
         }
 
-        this._assetService.getAssetPrice(symbol).subscribe({
+        this._assetService.getAssetPrice($event.symbol).subscribe({
             next: ({price}) => {
                 this.wallet.items.push({
-                    symbol,
-                    quantity: qty,
+                    symbol: $event.symbol,
+                    quantity: $event.amount,
                     price,
                     percentage: 0
                 });
 
                 this.wallet = this._walletFacadeService.recalculatePercentages(this.wallet);
-                this.assetForm.reset();
             }
         });
     }
