@@ -34,8 +34,8 @@ export class WalletService {
         return this.http.delete<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}`);
     }
 
-    updateAssetQuantityInWallet(userId: number, symbol: string, amount: number): Observable<WalletDto>{
-        return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/item/${symbol}?amount=${amount}`, {});
+    updateAssetQuantityInWallet(userId: number, asset: AssetDto): Observable<WalletDto>{
+        return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/item/${asset.symbol}?amount=${asset.amount}`, {});
     }
 
     removeWallet(userId: number): Observable<void>{

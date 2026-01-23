@@ -101,12 +101,11 @@ export class UserWallet implements OnInit {
         });
     }
 
-    protected modifyAsset(symbol: string, quantity: number) {
-        //TODO : use assetModel in params?
-        if (quantity <= 0) {
-            return this.removeAsset(symbol);
+    protected modifyAsset(asset: AssetDto) {
+        if (asset.amount <= 0) {
+            return this.removeAsset(asset.symbol);
         }
-        this._walletService.updateAssetQuantityInWallet(this.userId, symbol, quantity).pipe(
+        this._walletService.updateAssetQuantityInWallet(this.userId, asset).pipe(
             switchMap(() => this._walletFacadeService.loadWallet(this.userId))
         ).subscribe({
             next: assets => this.updateAssets(assets),
@@ -144,8 +143,12 @@ export class UserWallet implements OnInit {
     }
 
     protected saveEdit(symbol: string) {
-        const values = this.editingValues();
-        if (values) this.modifyAsset(symbol, values.quantity);
+        const values: AssetDto = {
+            id: 0,
+            symbol,
+            amount: this.editingValues()?.quantity ?? 0
+        };
+        if (values.amount) this.modifyAsset(values);
         this.cancelEdit();
     }
 
@@ -175,7 +178,7 @@ export class UserWallet implements OnInit {
 
     protected addAssetToWallet($event: AssetDto) {
         console.log($event.amount);
-        if (this.symbols.some(s => s === $event.symbol)) this.modifyAsset($event.symbol, $event.amount);
+        if (this.symbols.some(s => s === $event.symbol)) this.modifyAsset($event);
         else {
             this._walletService.addAssetToWalletFromUser(this.userId, $event).pipe(
                 switchMap(() => this._walletFacadeService.loadWallet(this.userId))
