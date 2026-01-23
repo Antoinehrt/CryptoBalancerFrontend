@@ -1,0 +1,46 @@
+@import "../../styles/background.css";
+@import "../../styles/table.css";
+@import "../../styles/button.css";
+
+.elements {
+  width: 100%;
+  margin: 0 15px;
+  padding: 20px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.elements form {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.elements mat-form-field {
+  flex: 1;
+  min-width: 250px;
+  max-width: 350px;
+}
+
+.elements button {
+  height: 48px;
+  min-width: 120px;
+  margin-top: 8px;
+}
+
+/* Make inputs shorter */
+.elements mat-form-field .mat-mdc-form-field-wrapper {
+  padding-bottom: 8px;
+}
+
+.elements mat-form-field .mat-mdc-text-field-wrapper {
+  height: 48px;
+}
+
+.elements h3 {
+  color: rgb(248, 250, 252);
+  margin-bottom: 20px;
+  text-align: center;
+}
