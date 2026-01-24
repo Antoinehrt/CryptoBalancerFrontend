@@ -1,0 +1,13 @@
+<div class="user-info">
+  <h1>Vous êtes connecté ! 🎉</h1>
+  @if (currentUser$ | async; as user) {
+    <div class="user-card">
+      <div class="user-details">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>ID:</strong> {{ user.id }}</p>
+        <p><strong>Créé le:</strong> {{ user.createdAt | date:'short' }}</p>
+      </div>
+    </div>
+  }
+</div>

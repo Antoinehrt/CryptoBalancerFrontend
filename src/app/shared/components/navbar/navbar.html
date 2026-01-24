@@ -1,0 +1,25 @@
+<mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav mode="side" opened disableClose class="sidenav permanent-sidenav">
+        <nav class="mat-nav-list">
+            <div class="top-links">
+                <a mat-list-item routerLink="/home" (click)="closeIfHandset()">Home</a>
+                <a mat-list-item routerLink="/profile" (click)="closeIfHandset()">Account</a>
+                <a mat-list-item routerLink="/strategies" (click)="closeIfHandset()">Strategies</a>
+                <a mat-list-item routerLink="/wallet" (click)="closeIfHandset()">My Wallet</a>
+                <a mat-list-item routerLink="/glossary" (click)="closeIfHandset()">Glossary</a>
+                <a mat-list-item routerLink="/settings" (click)="closeIfHandset()">Settings</a>
+            </div>
+
+            <div class="bottom-link">
+                <a mat-list-item routerLink="/login" (click)="logout()">Logout</a>
+            </div>
+        </nav>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+
+        <div class="content">
+            <ng-content></ng-content>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>

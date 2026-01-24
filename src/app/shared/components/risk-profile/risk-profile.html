@@ -1,0 +1,8 @@
+<div class="risk-profile">
+  @for (circle of circles; track circle) {
+    <div
+      class="circle"
+      [class.filled]="circle <= value"
+    ></div>
+  }
+</div>

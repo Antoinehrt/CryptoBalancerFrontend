@@ -1,0 +1,68 @@
+<div class="container background">
+  <div class="elements">
+    <app-add-asset-form (formSubmit)="addAsset($event)"></app-add-asset-form>
+  </div>
+
+  <div class="elements">
+    <app-chart
+      [datas]="chartData"
+      [cryptoSymbol]="''">
+    </app-chart>
+  </div>
+
+  <div class="elements">
+    <h3>Assets</h3>
+    @if (wallet.items.length > 0) {
+      <table class="assets-table">
+        <thead>
+        <tr>
+          <th>AssetModel</th>
+          <th>Quantity</th>
+          <th>Price</th>
+          <th>Percentage</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody>
+          @for (asset of wallet.items; track asset.symbol) {
+            <tr>
+              <td><strong>{{ asset.symbol }}</strong></td>
+              <td>{{ asset.quantity | number:'1.2-8' }}</td>
+              <td>{{ asset.price * asset.quantity | currency:'EUR':'symbol' }}</td>
+              <td>
+                        <span class="percentage">
+                            {{ asset.percentage }}%
+                        </span>
+              </td>
+              <td>
+                <button mat-icon-button class="btn secondary" (click)="removeAsset(asset.symbol)" title="Remove asset">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+    } @else {
+      <ng-template #noAssets>
+        <div class="no-assets">
+          <p>No assets in the wallet.</p>
+        </div>
+      </ng-template>
+    }
+  </div>
+
+  <div class="backtest-section">
+    <button
+      mat-raised-button
+      color="accent"
+      class="backtest-button"
+      [disabled]="wallet.items.length === 0"
+      (click)="saveWallet()"
+    >
+      <span>🚀 Run Backtest</span>
+    </button>
+  </div>
+</div>
