@@ -41,7 +41,7 @@ import {AssetDto} from '../../core/dto/asset.dto';
         AddAssetForm
     ],
     templateUrl: './user-wallet.html',
-    styleUrl: './user-wallet.css',
+    styleUrl: './user-wallet.scss',
 })
 export class UserWallet implements OnInit {
 

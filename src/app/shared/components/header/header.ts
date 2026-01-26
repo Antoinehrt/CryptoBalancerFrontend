@@ -21,7 +21,7 @@ import {Router} from '@angular/router';
         MatLabel
     ],
     templateUrl: './header.html',
-    styleUrl: './header.css',
+    styleUrl: './header.scss',
 })
 export class Header implements OnInit {
     private _pageTitleService = inject(PageTitleService);

@@ -18,7 +18,7 @@ import {AssetDto} from '../../../core/dto/asset.dto';
         MatButton
     ],
     templateUrl: './add-asset-form.html',
-    styleUrl: './add-asset-form.css',
+    styleUrl: './add-asset-form.scss',
 })
 export class AddAssetForm {
     private _fb = inject(FormBuilder);

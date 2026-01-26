@@ -6,7 +6,7 @@ import {CommonModule} from '@angular/common';
     selector: 'app-login',
     imports: [CommonModule],
     templateUrl: './login.html',
-    styleUrl: './login.css',
+    styleUrl: './login.scss',
 })
 export class Login {
     private authService = inject(AuthService);
