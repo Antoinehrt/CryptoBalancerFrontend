@@ -7,7 +7,7 @@ import {PageTitleService} from '../../core/services/page-title/page-title.servic
     selector: 'app-home',
     imports: [MatButtonModule],
     templateUrl: './home.html',
-    styleUrl: './home.css',
+    styleUrl: './home.scss',
 })
 export class Home {
     private pageTitleService = inject(PageTitleService);

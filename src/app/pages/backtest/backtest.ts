@@ -12,7 +12,7 @@ import {switchMap} from 'rxjs';
         StrategyCard
     ],
   templateUrl: './backtest.html',
-  styleUrl: './backtest.css',
+  styleUrl: './backtest.scss',
 })
 export class Backtest implements OnInit {
 

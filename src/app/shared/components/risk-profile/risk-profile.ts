@@ -4,7 +4,7 @@ import {Component, Input} from '@angular/core';
     selector: 'app-risk-profile',
     imports: [],
     templateUrl: './risk-profile.html',
-    styleUrl: './risk-profile.css',
+    styleUrl: './risk-profile.scss',
 })
 export class RiskProfile {
 

@@ -12,7 +12,7 @@ import {MatIcon} from '@angular/material/icon';
         MatLabel
     ],
   templateUrl: './glossary.html',
-  styleUrl: './glossary.css',
+  styleUrl: './glossary.scss',
 })
 export class Glossary {
 

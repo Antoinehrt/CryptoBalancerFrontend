@@ -9,7 +9,7 @@ import {PageTitleService} from '../../core/services/page-title/page-title.servic
         StrategyCard
     ],
   templateUrl: './strategy.html',
-  styleUrl: './strategy.css',
+  styleUrl: './strategy.scss',
 })
 
 export class Strategy implements OnInit{

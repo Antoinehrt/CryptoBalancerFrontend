@@ -16,7 +16,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
         MatListItem
     ],
     templateUrl: './navbar.html',
-    styleUrl: './navbar.css',
+    styleUrl: './navbar.scss',
 })
 export class Navbar {
     @ViewChild('sidenav') sidenav!: MatSidenav;

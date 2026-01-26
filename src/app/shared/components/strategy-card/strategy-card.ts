@@ -12,7 +12,7 @@ import {CurrencyPipe, DecimalPipe} from '@angular/common';
         DecimalPipe
     ],
     templateUrl: './strategy-card.html',
-    styleUrl: './strategy-card.css',
+    styleUrl: './strategy-card.scss',
 })
 export class StrategyCard {
 
