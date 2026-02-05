@@ -32,7 +32,7 @@ import {AddAssetForm} from '../../shared/components/add-asset-form/add-asset-for
         AddAssetForm
     ],
     templateUrl: './wallet-creation.html',
-    styleUrl: './wallet-creation.css',
+    styleUrl: './wallet-creation.scss',
 })
 export class WalletCreation {
     private _pageTitleService = inject(PageTitleService);

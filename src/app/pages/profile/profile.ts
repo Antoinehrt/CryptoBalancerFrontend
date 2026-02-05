@@ -9,7 +9,7 @@ import {AsyncPipe, DatePipe} from '@angular/common';
         DatePipe
     ],
     templateUrl: './profile.html',
-    styleUrl: './profile.css',
+    styleUrl: './profile.scss',
 })
 export class Profile {
     private authService = inject(AuthService);

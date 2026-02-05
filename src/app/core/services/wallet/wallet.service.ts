@@ -42,5 +42,9 @@ export class WalletService {
         return this.http.delete<void>(`${this.apiUrl}${userId}`);
     }
 
+    updateWalletStrategy(userId: number, strategy: string): Observable<WalletDto> {
+        return this.http.patch<WalletDto>(`${this.apiUrl}${userId}/strategy?strategy=${strategy}`, {});
+    }
+
 
 }

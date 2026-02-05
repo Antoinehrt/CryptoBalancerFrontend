@@ -25,7 +25,7 @@ Chart.register(
     selector: 'app-chart',
     imports: [],
     templateUrl: './chart.html',
-    styleUrl: './chart.css',
+    styleUrl: './chart.scss',
 })
 export class ChartComponent implements AfterViewInit, OnChanges, OnDestroy {
     @Input()

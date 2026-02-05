@@ -1,0 +1,10 @@
+@import "../../shared/styles/background";
+@import "../../shared/styles/table";
+@import "../../shared/styles/button";
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}

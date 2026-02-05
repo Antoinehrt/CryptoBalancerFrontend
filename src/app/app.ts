@@ -7,7 +7,7 @@ import {Header} from './shared/components/header/header';
   selector: 'app-root',
   imports: [RouterOutlet, Navbar, Header],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.scss'
 })
 export class App {
   protected readonly title = signal('CryptoBalancerFrontend');
