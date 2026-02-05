@@ -15,6 +15,8 @@ import {ChartComponent} from '../../shared/components/chart/chart';
 import {MatFormField, MatLabel} from '@angular/material/input';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {CandleModel} from '../../core/models/candle.model';
+import {PortfolioValueDto} from '../../core/dto/portfolio-value.dto';
+import {PortfolioValueModel} from '../../core/models/portfolio-value.model';
 import {Router} from '@angular/router';
 import {StrategyCard} from '../../shared/components/strategy-card/strategy-card';
 import {StrategyModel} from '../../core/models/strategy.model';
@@ -68,6 +70,7 @@ export class UserWallet implements OnInit {
     }
 
     candles: CandleModel[] = [];
+    portfolioValues = signal<PortfolioValueModel[]>([]);
     symbols: string[] = [];
     symbolForm: FormGroup;
     displayedSymbol: string = "";
@@ -91,10 +94,10 @@ export class UserWallet implements OnInit {
         ).subscribe({
             next: assets => {
                 this.assets.set(assets);
-                this.onSymbolChange(assets[0].symbol);
                 assets.forEach(value => {
                     this.symbols.push(value.symbol);
                 })
+                this.loadPortfolioValues();
                 this.isLoading.set(false);
             },
             error: () => this.isLoading.set(false)
@@ -174,6 +177,26 @@ export class UserWallet implements OnInit {
                 });
             }
         )
+    }
+
+    private loadPortfolioValues(): void {
+        this._walletService.getDailyPortfolioValues(this.userId).subscribe({
+            next: (values: PortfolioValueDto[]) => {
+                console.log('Portfolio values received:', values);
+                const mappedValues = values.map(dto => {
+                    const date = new Date(dto.date);
+                    return {
+                        date: date,
+                        value: dto.totalValue
+                    };
+                });
+                console.log('Mapped portfolio values:', mappedValues);
+                this.portfolioValues.set(mappedValues);
+            },
+            error: (error) => {
+                console.error('Error loading portfolio values', error);
+            }
+        });
     }
 
     protected addAssetToWallet($event: AssetDto) {
